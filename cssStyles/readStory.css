@@ -1,0 +1,136 @@
+body {
+  font-family: 'Montserrat', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f8f9fa;
+}
+
+nav {
+  background-color: #222;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  width: calc(100% - 20px);
+  left: 10px;
+  right: 10px;
+  top: 0;
+  z-index: 1000;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: bold;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+.main-wrapper {
+  margin-top: 100px;
+  margin-bottom: 100px;
+  padding: 0 10px;
+}
+
+/* .story-image {
+  border-radius: 8px;
+  display: block;
+  margin: 20px auto;
+  max-width: 100%;
+  height: auto;
+} */
+.story-image {
+  max-width: 100%;
+  max-height: 400px;
+  display: block;
+  margin: 20px auto;
+  border-radius: 8px;
+  object-fit: contain; /* changed from cover to contain for better fit */
+  /* optionally: */
+  /* width: auto; */
+  /* height: auto; */
+}
+
+.story-image.landscape {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  object-position: top;
+}
+
+.story-image.portrait {
+  width: 300px;
+  float: left;
+  margin: 0 20px 20px 0;
+  object-fit: contain;
+}
+
+.story-content {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.story-content p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #333;
+}
+
+.back-button {
+  display: flex;
+  justify-content: center;
+  margin: 30px auto 80px;
+}
+
+.back-button a {
+  text-decoration: none;
+  background-color: #007bff;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.back-button a:hover {
+  background-color: #0056b3;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  width: calc(100% - 20px);
+  left: 10px;
+  right: 10px;
+  background-color: #222;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+#storyDescription .ql-align-center {
+  text-align: center;
+}
+
+#storyDescription .ql-align-right {
+  text-align: right;
+}
+
+#storyDescription img {
+  max-width: 100%;
+  height: auto;
+  margin: 15px 0;
+  border-radius: 10px;
+}

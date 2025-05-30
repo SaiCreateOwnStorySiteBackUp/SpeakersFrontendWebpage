@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Speaker Stories</title>
+  <link rel="stylesheet" href="../cssStyles/speakerCssStyle.css" />
+  <style>
+    /* Optional basic styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .story-card {
+      border: 1px solid #ddd;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      background: white;
+      border-radius: 8px;
+    }
+    .story-card img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 0.5rem;
+      border-radius: 6px;
+    }
+    .story-card a {
+      display: inline-block;
+      margin-top: 0.5rem;
+      color: #007BFF;
+      text-decoration: none;
+    }
+    .story-card a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 id="speaker-name">Stories</h1>
+
+  <div id="story-list">
+    <!-- Stories will be dynamically inserted here -->
+  </div>
+
+  <script src="../javaScript/fetchStories.js"></script>
+</body>
+</html>

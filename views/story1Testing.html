@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Magical Jungle</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a3b1be9998.js" crossorigin="anonymous"></script>
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+    }
+
+    nav {
+      background-color: #222;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      width: calc(100% - 20px);
+      left: 10px;
+      right: 10px;
+      top: 0;
+      z-index: 1000;
+      box-sizing: border-box;
+      border-radius: 8px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .story-image {
+      border-radius: 8px;
+      display: block;
+      margin: 20px auto;
+    }
+
+    .story-image.landscape {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    .story-image.portrait {
+      width: 300px;
+      height: auto;
+      float: left;
+      margin: 0 20px 20px 0;
+      object-fit: contain;
+    }
+
+    .story-content {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .story-content p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #333;
+    }
+
+    .back-button {
+      display: block;
+      margin: 30px auto 80px;
+      text-align: center;
+    }
+
+    .back-button a {
+      text-decoration: none;
+      background-color: #007bff;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .back-button a:hover {
+      background-color: #0056b3;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: calc(100% - 20px);
+      left: 10px;
+      right: 10px;
+      background-color: #222;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .main-wrapper {
+      margin-top: 100px;
+      margin-bottom: 100px;
+      padding: 0 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header / Navigation -->
+  <nav>
+    <div style="color:white; font-weight:bold;">Lavanya Enterprises</div>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-wrapper">
+    <h1 style="text-align:center;">The Magical Jungle</h1>
+    <img src="images/south-africa-hluhluwe-giraffes-pattern.jpg" alt="Jungle Banner" class="story-image" id="mainStoryImage">
+
+    <div class="story-content">
+      <p>Once upon a time, deep in the heart of an uncharted jungle, a group of talking animals discovered something mysterious. Hidden beneath the ancient banyan tree was a glowing crystal unlike anything they had ever seen.</p>
+
+      <p>Leo the Lion, Mia the Monkey, and Ellie the Elephant decided to investigate further. As they touched the crystal, a bright light surrounded them—and suddenly, they could understand every language in the jungle, even the birds and insects!</p>
+
+      <p>With this newfound power, they brought peace between rival groups and built a beautiful village where all species lived together in harmony. The jungle began to flourish like never before. Streams sparkled, flowers bloomed, and laughter echoed through the trees.</p>
+
+      <p>One day, a young human boy wandered into the jungle. He was lost and afraid, but the animals, using their magical communication, helped him find his way back home. The boy promised to protect the jungle forever—and he kept his word.</p>
+
+      <p>And so, the magical jungle remained a hidden paradise, protected by the bond of trust, unity, and a little bit of magic.</p>
+    </div>
+
+    <div style="clear: both;"></div>
+
+    <div class="back-button">
+      <a href="cherana.html">← Back to Cherana's Stories</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 Lavanya Enterprises. All rights reserved.
+  </footer>
+
+  <!-- Auto orientation detection script -->
+  <script>
+    window.onload = function () {
+      const img = document.getElementById('mainStoryImage');
+      img.onload = function () {
+        if (img.naturalHeight > img.naturalWidth) {
+          img.classList.add('portrait');
+        } else {
+          img.classList.add('landscape');
+        }
+      };
+    };
+  </script>
+
+</body>
+</html>
