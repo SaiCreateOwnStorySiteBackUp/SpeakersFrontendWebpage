@@ -16,11 +16,13 @@ app.use('/cssStyles', express.static(path.join(__dirname, 'cssStyles')));
 
 // ---------- API Proxy ----------
 // app.use('/stories', createProxyMiddleware({ target: 'http://localhost:5000', changeOrigin: true }));
-app.use('/api/stories', createProxyMiddleware({ target: 'http://localhost:5000', changeOrigin: true }));
-app.use('/users', createProxyMiddleware({ target: 'http://localhost:5000', changeOrigin: true }));
+const BACKEND_URL = 'https://speakersbackendwebpage.onrender.com';
+
+app.use('/api/stories', createProxyMiddleware({ target: BACKEND_URL, changeOrigin: true }));
+app.use('/users', createProxyMiddleware({ target: BACKEND_URL, changeOrigin: true }));
 // You can add other backend routes too
-app.use('/auth', createProxyMiddleware({ target: 'http://localhost:5000', changeOrigin: true }));
-app.use('/upload', createProxyMiddleware({ target: 'http://localhost:5000', changeOrigin: true }));
+app.use('/auth', createProxyMiddleware({ target: BACKEND_URL, changeOrigin: true }));
+app.use('/upload', createProxyMiddleware({ target: BACKEND_URL, changeOrigin: true }));
 // ---------- API Routes (read-only APIs) ----------
 // These routes should allow public to get stories and speakers info
 // const storiesRoute = require('./routes/stories');
