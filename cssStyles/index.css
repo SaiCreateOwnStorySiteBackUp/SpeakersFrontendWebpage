@@ -60,7 +60,7 @@
       line-height: 1.6em;
     }
 
-    .speakers {
+    /* .speakers {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 20px;
@@ -68,6 +68,15 @@
       margin: 2rem auto;
       padding: 0 1rem;
     }
+     */
+     .speakers {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 40px 20px; /* row gap: 40px, column gap: 20px */
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
 
     .speaker {
       background-color: #f9f9f9;
@@ -123,6 +132,17 @@
         flex-direction: column;
         text-align: center;
       }
+
+      .speakers {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .speakers {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
 
       nav {
         margin-top: 0.5rem;
