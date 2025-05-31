@@ -144,32 +144,25 @@
         grid-template-columns: repeat(2, 1fr);
       }
     } */
-    @media (max-width: 992px) {
-      .speakers {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
     @media (max-width: 600px) {
-      .speakers {
-        grid-template-columns: 1fr;
-      }
+  .speakers {
+    grid-template-columns: 1fr;
+  }
 
-      header {
-        flex-direction: column;
-        text-align: center;
-      }
-    }
+  header {
+    flex-direction: column;
+    text-align: center;
+  }
 
-      nav {
-        margin-top: 0.5rem;
-      }
+  nav {
+    margin-top: 0.5rem;
+  }
 
-      .welcome h1 {
-        font-size: 2em;
-      }
+  .welcome h1 {
+    font-size: 2em;
+  }
 
-      .welcome p {
-        font-size: 1em;
-      }
-    }
+  .welcome p {
+    font-size: 1em;
+  }
+}
