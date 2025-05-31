@@ -2,160 +2,175 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Cherana's Stories</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Sadhana's Stories</title>
+  <!-- <link rel="stylesheet" href="/css/style.css"> -->
+  <link rel="stylesheet" href="/cssStyles/speakersCssStyle.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://kit.fontawesome.com/a3b1be9998.js" crossorigin="anonymous"></script>
-  <style>
-    body {
-      font-family: 'Montserrat', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      display: flex;
-      flex-direction: row;
-      margin: 20px;
-    }
-    .speaker-info {
-      width: 30%;
-      padding: 20px;
-    }
-    .speaker-info img {
-      width: 100%;
-      border-radius: 10px;
-    }
-    .story-section {
-      width: 70%;
-      padding: 20px;
-    }
-    .story {
-      display: flex;
-      margin-bottom: 20px;
-      background-color: #f5f5f5;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .story img {
-      width: 150px;
-      height: auto;
-    }
-    .story-details {
-      padding: 10px;
-      flex-grow: 1;
-    }
-    .story-details h3 {
-      margin: 0;
-      color: #007bff;
-      cursor: pointer;
-    }
-    .likes {
-      margin-top: 10px;
-    }
-    .likes i {
-      margin-right: 10px;
-      cursor: pointer;
-    }
-    .pagination {
-      text-align: center;
-      margin-top: 30px;
-    }
-    .pagination a {
-      padding: 10px 15px;
-      margin: 0 5px;
-      background: #007bff;
-      color: white;
-      border-radius: 5px;
-      text-decoration: none;
-    }
-    .pagination a:hover {
-      background: #0056b3;
-    }
-  </style>
 </head>
 <body>
 
-  <div class="container">
-    <!-- Left Speaker Info -->
-    <div class="speaker-info">
-      <img src="images/sadhana.PNG" alt="Sadhana">
-      <h2>Sadhana</h2>
-      <p>Specializes in Kids Stories. Brings imagination to life through colorful characters and fun adventures.</p>
-    </div>
-
-    <!-- Right Stories -->
-    <div class="story-section">
-      <!-- Story 1 -->
-      <div class="story">
-        <img src="images/story1.jpg" alt="Story 1">
-        <div class="story-details">
-          <h3 onclick="location.href='story1.html'">The Magical Jungle</h3>
-          <p>A group of animals find a hidden treasure deep in the forest...</p>
-          <div class="likes">
-            <i class="fas fa-thumbs-up"></i>
-            <i class="fas fa-thumbs-down"></i>
-          </div>
-        </div>
-      </div>
-
-      <!-- Story 2 -->
-      <div class="story">
-        <img src="images/story2.jpg" alt="Story 2">
-        <div class="story-details">
-          <h3 onclick="location.href='story2.html'">Timmy and the Talking Shoes</h3>
-          <p>Little Timmy finds a pair of magical shoes that talk...</p>
-          <div class="likes">
-            <i class="fas fa-thumbs-up"></i>
-            <i class="fas fa-thumbs-down"></i>
-          </div>
-        </div>
-      </div>
-
-      <!-- Add 3 more story blocks similarly -->
-      <div class="story">
-        <img src="images/story3.jpg" alt="Story 3">
-        <div class="story-details">
-          <h3 onclick="location.href='story3.html'">Flying Cat Adventure</h3>
-          <p>What if your pet cat could fly and save the day?</p>
-          <div class="likes">
-            <i class="fas fa-thumbs-up"></i>
-            <i class="fas fa-thumbs-down"></i>
-          </div>
-        </div>
-      </div>
-
-      <div class="story">
-        <img src="images/story4.jpg" alt="Story 4">
-        <div class="story-details">
-          <h3 onclick="location.href='story4.html'">The Candy Planet</h3>
-          <p>Kids travel in space and discover a sweet surprise...</p>
-          <div class="likes">
-            <i class="fas fa-thumbs-up"></i>
-            <i class="fas fa-thumbs-down"></i>
-          </div>
-        </div>
-      </div>
-
-      <div class="story">
-        <img src="images/story5.jpg" alt="Story 5">
-        <div class="story-details">
-          <h3 onclick="location.href='story5.html'">Robot and Me</h3>
-          <p>Life changes when a robot becomes your best friend...</p>
-          <div class="likes">
-            <i class="fas fa-thumbs-up"></i>
-            <i class="fas fa-thumbs-down"></i>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pagination -->
-      <div class="pagination">
-        <a href="#">1</a>
-        <a href="#">2</a>
-        <a href="#">3</a>
-      </div>
-    </div>
+<!-- Header Navigation -->
+<nav>
+  <div><strong style="color:white;">Free Voices</strong></div>
+  <div>
+    <a href="/index.html">Home</a>
+    <a href="/about.html">About</a>
+    <a href="/contact.html">Contact</a>
   </div>
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+  <!-- Speaker Info -->
+  <div class="speaker-info">
+    <img src="/images/sadhana.PNG" alt="Sadhana">
+    <h2>Cherana</h2>
+    <p>Specializes in Kids Stories. Brings imagination to life through colorful characters and fun adventures.</p>
+  </div>
+
+  <!-- Stories Section -->
+  <div class="story-section" id="storySection"></div>
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<footer id="footer">
+  <a href="#"><i class="fab fa-facebook"></i></a>
+  <a href="#"><i class="fab fa-twitter"></i></a>
+  <a href="#"><i class="fab fa-instagram"></i></a>
+  <p>&copy; 2025 Free Voices | Follow us:</p>
+</footer>
+
+<script src="/js/config.js"></script>
+<script src="/js/api.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const storiesPerPage = 5;
+  let currentPage = 1;
+  let allStories = [];
+
+  // ✅ Fetch stories using fetchFromAPI() and BACKEND_BASE_URL
+  fetchFromAPI(`/stories?email=medaramitlasadhana.89@gmail.com`)
+    .then(stories => {
+      allStories = stories;
+      if (!Array.isArray(allStories) || allStories.length === 0) {
+        document.getElementById('storySection').innerHTML = '<p>No stories posted yet.</p>';
+        return;
+      }
+      renderStories(currentPage);
+      renderPagination();
+    })
+    .catch(err => {
+      console.error('Failed to load stories:', err);
+      document.getElementById('storySection').innerHTML = '<p>Failed to load stories. Please try again later.</p>';
+    });
+
+  function renderStories(page) {
+    const container = document.getElementById('storySection');
+    container.innerHTML = '';
+    const start = (page - 1) * storiesPerPage;
+    const end = start + storiesPerPage;
+    const paginatedStories = allStories.slice(start, end);
+
+    paginatedStories.forEach(story => {
+      const storyDiv = document.createElement('div');
+      storyDiv.classList.add('story');
+
+      const likeKey = `like_${story._id}`;
+      const dislikeKey = `dislike_${story._id}`;
+      const isLiked = localStorage.getItem(likeKey) === 'true';
+      const isDisliked = localStorage.getItem(dislikeKey) === 'true';
+
+      storyDiv.innerHTML = `
+        <img src="${story.imageUrl}" alt="${story.title}" onclick="location.href='readStory.html?id=${story._id}&speaker=Cherana'">
+        <div class="story-details">
+          <h3 onclick="location.href='readStory.html?id=${story._id}&speaker=Cherana'">${story.title}</h3>
+          <p>${story.intro}</p>
+          <div class="likes">
+            <i class="fas fa-thumbs-up ${isLiked ? 'liked' : ''}" data-id="${story._id}"></i>
+            <span class="like-count" id="like-count-${story._id}">${story.likes || 0}</span>
+            <i class="fas fa-thumbs-down ${isDisliked ? 'disliked' : ''}" data-id="${story._id}"></i>
+            <span class="dislike-count" id="dislike-count-${story._id}">${story.dislikes || 0}</span>
+          </div>
+        </div>
+      `;
+      container.appendChild(storyDiv);
+    });
+  }
+
+  function renderPagination() {
+    const paginationContainer = document.getElementById('pagination');
+    paginationContainer.innerHTML = '';
+    const totalPages = Math.ceil(allStories.length / storiesPerPage);
+
+    if (totalPages <= 1) {
+      paginationContainer.style.display = 'none';
+      return;
+    }
+
+    paginationContainer.style.display = 'block';
+
+    for (let i = 1; i <= totalPages; i++) {
+      const pageLink = document.createElement('a');
+      pageLink.textContent = i;
+      if (i === currentPage) pageLink.classList.add('active');
+
+      pageLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        currentPage = i;
+        renderStories(currentPage);
+        renderPagination();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      paginationContainer.appendChild(pageLink);
+    }
+  }
+
+  // Like / Dislike Handler
+  document.getElementById('storySection').addEventListener('click', async (e) => {
+    if (e.target.classList.contains('fa-thumbs-up') || e.target.classList.contains('fa-thumbs-down')) {
+      const storyId = e.target.getAttribute('data-id');
+      const isLike = e.target.classList.contains('fa-thumbs-up');
+
+      const likeKey = `like_${storyId}`;
+      const dislikeKey = `dislike_${storyId}`;
+      const liked = localStorage.getItem(likeKey) === 'true';
+      const disliked = localStorage.getItem(dislikeKey) === 'true';
+
+      const action = isLike
+        ? (liked ? 'unlike' : 'like')
+        : (disliked ? 'undislike' : 'dislike');
+
+      try {
+        const updated = await fetchFromAPI(`/stories/${storyId}/${action}`, {
+          method: 'POST'
+        });
+
+        document.getElementById(`like-count-${storyId}`).textContent = updated.likes;
+        document.getElementById(`dislike-count-${storyId}`).textContent = updated.dislikes;
+
+        const likeIcon = document.querySelector(`.fa-thumbs-up[data-id="${storyId}"]`);
+        const dislikeIcon = document.querySelector(`.fa-thumbs-down[data-id="${storyId}"]`);
+
+        if (isLike) {
+          localStorage.setItem(likeKey, !liked);
+          localStorage.setItem(dislikeKey, false);
+          likeIcon.classList.toggle('liked', !liked);
+          dislikeIcon.classList.remove('disliked');
+        } else {
+          localStorage.setItem(dislikeKey, !disliked);
+          localStorage.setItem(likeKey, false);
+          dislikeIcon.classList.toggle('disliked', !disliked);
+          likeIcon.classList.remove('liked');
+        }
+      } catch (err) {
+        console.error(`Failed to ${action} story:`, err);
+      }
+    }
+  });
+});
+</script>
 
 </body>
 </html>
