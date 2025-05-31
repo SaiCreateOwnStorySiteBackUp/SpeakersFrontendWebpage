@@ -1,3 +1,5 @@
+// import { BACKEND_BASE_URL } from '../public/js/config.js'; // path may need adjustment
+
 function getQueryParam(param) {
   const params = new URLSearchParams(window.location.search);
   return params.get(param);
@@ -5,7 +7,8 @@ function getQueryParam(param) {
 
 async function fetchStoriesForSpeaker(speakerName) {
   try {
-    const apiUrl = `http://localhost:5000/api/stories?speaker=${encodeURIComponent(speakerName)}`;
+    // const apiUrl = `http://localhost:5000/api/stories?speaker=${encodeURIComponent(speakerName)}`;
+    const apiUrl = `${BACKEND_BASE_URL}/api/stories?speaker=${encodeURIComponent(speakerName)}`;
     const response = await fetch(apiUrl);
 
     if (!response.ok) {
@@ -46,7 +49,8 @@ function renderStories(stories) {
       if (!isAbsoluteUrl) {
         imageUrl = imageUrl.startsWith('/') ? imageUrl : `/uploads/${imageUrl}`;
       }
-      imageUrl = `http://localhost:5000${imageUrl}`;
+      // imageUrl = `http://localhost:5000${imageUrl}`;
+      imageUrl = `${BACKEND_BASE_URL}${imageUrl}`;
     }
 
     const storyLink = `readStory.html?id=${encodeURIComponent(storyId)}&speaker=${encodeURIComponent(speaker)}`;

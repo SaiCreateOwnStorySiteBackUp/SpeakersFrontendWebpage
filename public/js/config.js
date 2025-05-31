@@ -1,1 +1,1 @@
-const BACKEND_BASE_URL = "http://localhost:5000";
+const BACKEND_BASE_URL = "https://speakersbackendwebpage.onrender.com";
