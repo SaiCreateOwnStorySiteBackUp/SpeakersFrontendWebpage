@@ -55,7 +55,21 @@ app.get('/readStory.html', (req, res) => {
 // app.listen(PORT, () => {
 //   console.log(`🚀 Frontend Server started at http://localhost:${PORT}`);
 // });
-
-app.listen(process.env.PORT || 3000, function() => {
-  console.log(`🚀 Frontend Server started at 3000`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Frontend Server started on port ${PORT}`);
 });
+// Option 1: Traditional function
+// app.listen(process.env.PORT || 3000, function () {
+//   console.log(`🚀 Frontend Server started at port ${process.env.PORT || 3000}`);
+// });
+
+// Option 2: Arrow function (without function keyword)
+// app.listen(process.env.PORT || 3000, () => {
+//   console.log(`🚀 Frontend Server started at port ${process.env.PORT || 3000}`);
+// });
+
+
+// app.listen(process.env.PORT || 3000, function() => {
+//   console.log(`🚀 Frontend Server started at 3000`);
+// });
