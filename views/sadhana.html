@@ -40,30 +40,41 @@
   <a href="#"><i class="fab fa-instagram"></i></a>
   <p>&copy; 2025 Free Voices | Follow us:</p>
 </footer>
-
 <script src="/js/config.js"></script>
 <script src="/js/api.js"></script>
+
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const storiesPerPage = 5;
   let currentPage = 1;
   let allStories = [];
 
-  // ✅ Fetch stories using fetchFromAPI() and BACKEND_BASE_URL
-  fetchFromAPI(`/stories?email=medaramitlasadhana.89@gmail.com`)
-    .then(stories => {
-      allStories = stories;
-      if (!Array.isArray(allStories) || allStories.length === 0) {
-        document.getElementById('storySection').innerHTML = '<p>No stories posted yet.</p>';
-        return;
-      }
-      renderStories(currentPage);
-      renderPagination();
-    })
-    .catch(err => {
-      console.error('Failed to load stories:', err);
-      document.getElementById('storySection').innerHTML = '<p>Failed to load stories. Please try again later.</p>';
-    });
+  const email = "medaramitlasadhana.89@gmail.com";
+  let speakerName = "Speaker"; // fallback
+
+  // ✅ Get speaker name using email (match your backend route `/users/email/:email`)
+  try {
+    const speakerRes = await fetchFromAPI(`/users/email/${encodeURIComponent(email)}`);
+    if (speakerRes.success && speakerRes.user && speakerRes.user.name) {
+      speakerName = speakerRes.user.name;
+    }
+  } catch (err) {
+    console.warn("Could not fetch speaker name:", err);
+  }
+
+  // ✅ Fetch stories for the given email
+  try {
+    allStories = await fetchFromAPI(`/stories?email=${encodeURIComponent(email)}`);
+    if (!Array.isArray(allStories) || allStories.length === 0) {
+      document.getElementById('storySection').innerHTML = '<p>No stories posted yet.</p>';
+      return;
+    }
+    renderStories(currentPage);
+    renderPagination();
+  } catch (err) {
+    console.error('Failed to load stories:', err);
+    document.getElementById('storySection').innerHTML = '<p>Failed to load stories. Please try again later.</p>';
+  }
 
   function renderStories(page) {
     const container = document.getElementById('storySection');
@@ -82,9 +93,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const isDisliked = localStorage.getItem(dislikeKey) === 'true';
 
       storyDiv.innerHTML = `
-        <img src="${story.imageUrl}" alt="${story.title}" onclick="location.href='readStory.html?id=${story._id}&speaker=Cherana'">
+        <img src="${story.imageUrl}" alt="${story.title}" onclick="location.href='readStory.html?id=${story._id}&speaker=${encodeURIComponent(speakerName)}'">
         <div class="story-details">
-          <h3 onclick="location.href='readStory.html?id=${story._id}&speaker=Cherana'">${story.title}</h3>
+          <h3 onclick="location.href='readStory.html?id=${story._id}&speaker=${encodeURIComponent(speakerName)}'">${story.title}</h3>
           <p>${story.intro}</p>
           <div class="likes">
             <i class="fas fa-thumbs-up ${isLiked ? 'liked' : ''}" data-id="${story._id}"></i>
@@ -171,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 </script>
+
 
 </body>
 </html>

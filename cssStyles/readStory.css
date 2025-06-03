@@ -137,3 +137,81 @@ footer {
   margin: 15px 0;
   border-radius: 10px;
 }
+/* Responsive adjustments for tablets and smaller devices */
+@media (max-width: 1024px) {
+  .story-content {
+    padding: 16px;
+    margin: 30px 10px;
+  }
+
+  .story-content p {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .story-image.portrait {
+    width: 200px;
+    margin: 0 10px 15px 0;
+  }
+}
+
+/* Responsive adjustments for smartphones */
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  nav a {
+    margin: 10px 0 0 0;
+  }
+
+  .story-content {
+    padding: 14px;
+    margin: 20px 8px;
+  }
+
+  .story-content p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .story-image.portrait {
+    width: 100%;
+    float: none;
+    display: block;
+    margin: 0 auto 20px;
+  }
+}
+
+/* Extra small devices like iPhone 12 Mini */
+@media (max-width: 480px) {
+  nav {
+    padding: 15px;
+  }
+
+  .story-content {
+    padding: 12px;
+    margin: 15px 5px;
+  }
+
+  .story-content p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+
+  .story-image {
+    max-height: 300px;
+  }
+
+  .back-button a {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+
+  footer {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+}

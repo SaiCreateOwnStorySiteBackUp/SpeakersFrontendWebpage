@@ -48,258 +48,135 @@
 
   <!-- DOMPurify for XSS protection -->
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.2/dist/purify.min.js"></script>
-  <!-- <script src="/js/config.js"></script>
+  <script src="/js/config.js"></script>
   <script src="/js/api.js"></script>
-<script>
-function stripHTML(html) {
-  // Create a temporary div and assign the HTML, then get only textContent (plain text)
+  <script>
+  function stripHTML(html) {
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = html;
   return tempDiv.textContent || tempDiv.innerText || '';
 }
 
-  async function fetchStoryData() {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const storyId = params.get('id');
-      const speakerName = params.get('speaker') || 'index';
-      document.getElementById('backButton').href = `${speakerName.toLowerCase()}.html`;
+async function fetchStoryData() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const storyId = params.get('id');
+    const speakerName = params.get('speaker');
 
-      if (!storyId) {
-        alert("Missing story ID in the URL.");
-        return;
-      }
-
-      // ✅ FIXED: Correct API route
-      const response = await fetch(`http://localhost:5000/api/stories/${storyId}`);
-      if (!response.ok) {
-        throw new Error("Story not found or server error.");
-      }
-
-      const story = await response.json();
-      if (!story || Object.keys(story).length === 0) {
-        alert("Story not found.");
-        return;
-      }
-
-      // ✅ Title
-      // document.getElementById('storyTitle').innerText = story.title || 'Untitled Story';
-      document.getElementById('storyTitle').innerText = stripHTML(story.title) || 'Untitled Story';
-
-      // ✅ Description cleanup + image parsing
-      let descriptionHTML = story.description || 'No description';
-
-      // Remove <a> tags wrapping image URLs
-      descriptionHTML = descriptionHTML.replace(
-        /<a\s+[^>]*href="(https?:\/\/[^\s<]+?\.(?:png|jpe?g|gif|webp|svg|bmp))"[^>]*>\1<\/a>/gi,
-        '$1'
-      );
-
-      // Convert image URLs inside <p> tags
-      descriptionHTML = descriptionHTML.replace(
-        /(<p>)?(https?:\/\/[^\s<]+?\.(?:png|jpe?g|gif|webp|svg|bmp))(<\/p>)?/gi,
-        (match, p1, url) =>
-          `<p><img src="${url}" alt="Embedded Image" style="max-width:100%; border-radius:10px; margin:15px 0;" /></p>`
-      );
-
-      // Linkify plain URLs
-      descriptionHTML = descriptionHTML.replace(
-        /(?<!["'>])(https?:\/\/[^\s<>"']+)(?![^<]*?>)/gi,
-        (match) =>
-          `<a href="${match}" target="_blank" rel="noopener noreferrer">${match}</a>`
-      );
-
-      // ✅ Set sanitized HTML
-      document.getElementById('storyDescription').innerHTML = DOMPurify.sanitize(descriptionHTML);
-
-      const image = document.getElementById('mainStoryImage');
-      let imagePath = story.imageUrl?.trim(); // ✅ FIXED FIELD NAME
-
-      if (imagePath) {
-        const isAbsoluteUrl = /^(https?:)?\/\//i.test(imagePath);
-
-        if (!isAbsoluteUrl) {
-          if (imagePath.startsWith("public/")) {
-            imagePath = imagePath.replace("public/", "/");
-          } else if (!imagePath.startsWith("/")) {
-            imagePath = "/uploads/" + imagePath;
-          }
-          imagePath = `http://localhost:5000${imagePath}`;
-        }
-
-        image.src = imagePath;
-        image.style.display = "block";
-
-        image.onload = () => {
-          image.classList.remove('portrait', 'landscape');
-
-          if (image.naturalHeight > image.naturalWidth) {
-            image.classList.add('portrait');
-            image.style.float = 'left';
-            image.style.margin = '0 20px 20px 0';
-          } else {
-            image.classList.add('landscape');
-            image.style.float = 'none';
-            image.style.margin = '20px auto';
-            image.style.display = 'block';
-          }
-        };
-
-        image.onerror = () => {
-          console.warn("Image failed to load:", image.src);
-          image.style.display = "none";
-        };
-
-        image.alt = story.title ? `Image for story: ${story.title}` : "Story Image";
-      } else {
-        image.style.display = "none";
-        image.src = "";
-        image.alt = "";
-      }
-
-
-
-
-      // ✅ YouTube embedding
-      const youtubeDiv = document.getElementById('youtubeEmbed');
-      youtubeDiv.innerHTML = '';
-      if (story.youtubeLink) {
-        const match = story.youtubeLink.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]+)/);
-        if (match && match[1]) {
-          const embedUrl = `https://www.youtube.com/embed/${match[1]}`;
-          youtubeDiv.innerHTML = `<iframe width="100%" height="400" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`;
-        }
-      }
-
-    } catch (err) {
-      console.error("Error loading story:", err);
-      alert("An error occurred while loading the story.");
+    if (!storyId || !speakerName) {
+      alert("Missing story ID or speaker name.");
+      return;
     }
-  }
 
-  window.onload = fetchStoryData;
-</script> -->
-<script src="/js/config.js"></script>
-<script src="/js/api.js"></script>
-<script>
-  function stripHTML(html) {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = html;
-    return tempDiv.textContent || tempDiv.innerText || '';
-  }
+    // ✅ FIX 1: Fetch speakers using full API path
+    const speakers = await fetchFromAPI('/users/speakers');
 
-  async function fetchStoryData() {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const storyId = params.get('id');
-      const speakerName = params.get('speaker') || 'index';
-      document.getElementById('backButton').href = `${speakerName.toLowerCase()}.html`;
+    const speaker = speakers.find(s =>
+      s.name.trim().toLowerCase() === speakerName.trim().toLowerCase()
+    );
 
-      if (!storyId) {
-        alert("Missing story ID in the URL.");
-        return;
-      }
-
-      // ✅ Fetch story using dynamic BASE_URL and fetchFromAPI
-      const story = await fetchFromAPI(`/api/stories/${storyId}`);
-      if (!story || Object.keys(story).length === 0) {
-        alert("Story not found.");
-        return;
-      }
-
-      // ✅ Title
-      document.getElementById('storyTitle').innerText = stripHTML(story.title) || 'Untitled Story';
-
-      // ✅ Description cleanup + image parsing
-      let descriptionHTML = story.description || 'No description';
-
-      // Remove <a> tags wrapping image URLs
-      descriptionHTML = descriptionHTML.replace(
-        /<a\s+[^>]*href="(https?:\/\/[^\s<]+?\.(?:png|jpe?g|gif|webp|svg|bmp))"[^>]*>\1<\/a>/gi,
-        '$1'
-      );
-
-      // Convert image URLs inside <p> tags
-      descriptionHTML = descriptionHTML.replace(
-        /(<p>)?(https?:\/\/[^\s<]+?\.(?:png|jpe?g|gif|webp|svg|bmp))(<\/p>)?/gi,
-        (match, p1, url) =>
-          `<p><img src="${url}" alt="Embedded Image" style="max-width:100%; border-radius:10px; margin:15px 0;" /></p>`
-      );
-
-      // Linkify plain URLs
-      descriptionHTML = descriptionHTML.replace(
-        /(?<!["'>])(https?:\/\/[^\s<>"']+)(?![^<]*?>)/gi,
-        (match) =>
-          `<a href="${match}" target="_blank" rel="noopener noreferrer">${match}</a>`
-      );
-
-      document.getElementById('storyDescription').innerHTML = DOMPurify.sanitize(descriptionHTML);
-
-      // ✅ Handle story image
-      const image = document.getElementById('mainStoryImage');
-      let imagePath = story.imageUrl?.trim();
-
-      if (imagePath) {
-        const isAbsoluteUrl = /^(https?:)?\/\//i.test(imagePath);
-
-        if (!isAbsoluteUrl) {
-          if (imagePath.startsWith("public/")) {
-            imagePath = imagePath.replace("public/", "/");
-          } else if (!imagePath.startsWith("/")) {
-            imagePath = "/uploads/" + imagePath;
-          }
-          imagePath = `${BACKEND_BASE_URL}${imagePath}`;
-        }
-
-        image.src = imagePath;
-        image.style.display = "block";
-
-        image.onload = () => {
-          image.classList.remove('portrait', 'landscape');
-          if (image.naturalHeight > image.naturalWidth) {
-            image.classList.add('portrait');
-            image.style.float = 'left';
-            image.style.margin = '0 20px 20px 0';
-          } else {
-            image.classList.add('landscape');
-            image.style.float = 'none';
-            image.style.margin = '20px auto';
-            image.style.display = 'block';
-          }
-        };
-
-        image.onerror = () => {
-          console.warn("Image failed to load:", image.src);
-          image.style.display = "none";
-        };
-
-        image.alt = story.title ? `Image for story: ${story.title}` : "Story Image";
-      } else {
-        image.style.display = "none";
-        image.src = "";
-        image.alt = "";
-      }
-
-      // ✅ YouTube embedding
-      const youtubeDiv = document.getElementById('youtubeEmbed');
-      youtubeDiv.innerHTML = '';
-      if (story.youtubeLink) {
-        const match = story.youtubeLink.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]+)/);
-        if (match && match[1]) {
-          const embedUrl = `https://www.youtube.com/embed/${match[1]}`;
-          youtubeDiv.innerHTML = `<iframe width="100%" height="400" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`;
-        }
-      }
-
-    } catch (err) {
-      console.error("Error loading story:", err);
-      alert("An error occurred while loading the story.");
+    if (!speaker) {
+      console.error("Speaker not found:", speakerName);
+      return;
     }
+
+    const email = speaker.email;
+
+    // ✅ Fetch story by ID to validate ownership
+    const storyById = await fetchFromAPI(`/api/stories/${storyId}`);
+
+    if (!storyById || storyById.email !== email) {
+      console.error("Story not found or does not belong to speaker:", email);
+      return;
+    }
+
+    // Back link setup
+    const speakerSlug = decodeURIComponent(speakerName)
+      .trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-_]/g, '');
+    document.getElementById('backButton').href = `${speakerSlug}.html`;
+
+    // ✅ Fetch all stories by email
+    const stories = await fetchFromAPI(`/api/stories?email=${encodeURIComponent(email)}`);
+
+    const story = Array.isArray(stories)
+      ? stories.find(s => s._id === storyId)
+      : (stories._id === storyId ? stories : null);
+
+    if (!story) {
+      alert("Requested story not found for this speaker.");
+      return;
+    }
+
+    document.getElementById('storyTitle').innerText = stripHTML(story.title || 'Untitled Story');
+
+    // Format and sanitize description
+    let descriptionHTML = story.description || 'No description';
+    descriptionHTML = descriptionHTML
+      .replace(/<a\s+[^>]*href="(https?:\/\/[^\s<]+?\.(?:png|jpe?g|gif|webp|svg|bmp))"[^>]*>\1<\/a>/gi, '$1')
+      .replace(/(<p>)?(https?:\/\/[^\s<]+?\.(?:png|jpe?g|gif|webp|svg|bmp))(<\/p>)?/gi,
+        (_, p1, url) => `<p><img src="${url}" style="max-width:100%; border-radius:10px; margin:15px 0;" /></p>`)
+      .replace(/(?<!["'>])(https?:\/\/[^\s<>"']+)(?![^<]*?>)/gi,
+        match => `<a href="${match}" target="_blank" rel="noopener noreferrer">${match}</a>`);
+
+    document.getElementById('storyDescription').innerHTML = DOMPurify.sanitize(descriptionHTML);
+
+    // ✅ FIX 2: Handle image path using BACKEND_BASE_URL
+    const image = document.getElementById('mainStoryImage');
+    let imagePath = story.imageUrl?.trim();
+
+    if (imagePath && !/^(https?:)?\/\//i.test(imagePath)) {
+      if (imagePath.startsWith("public/")) {
+        imagePath = imagePath.replace("public/", "/");
+      } else if (!imagePath.startsWith("/")) {
+        imagePath = "/uploads/" + imagePath;
+      }
+      imagePath = `${window.BACKEND_BASE_URL}${imagePath}`;
+    }
+
+    if (imagePath) {
+      image.src = imagePath;
+      image.style.display = "block";
+
+      image.onload = () => {
+        image.classList.remove('portrait', 'landscape');
+        if (image.naturalHeight > image.naturalWidth) {
+          image.classList.add('portrait');
+          image.style.float = 'left';
+          image.style.margin = '0 20px 20px 0';
+        } else {
+          image.classList.add('landscape');
+          image.style.float = 'none';
+          image.style.margin = '20px auto';
+        }
+      };
+
+      image.onerror = () => {
+        console.warn("Image failed to load:", image.src);
+        image.style.display = "none";
+      };
+    } else {
+      image.style.display = "none";
+    }
+
+    // ✅ YouTube Embed
+    const youtubeDiv = document.getElementById('youtubeEmbed');
+    youtubeDiv.innerHTML = '';
+    if (story.youtubeLink) {
+      const match = story.youtubeLink.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]+)/);
+      if (match && match[1]) {
+        const embedUrl = `https://www.youtube.com/embed/${match[1]}`;
+        youtubeDiv.innerHTML = `<iframe width="100%" height="400" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`;
+      }
+    }
+
+  } catch (err) {
+    console.error("Error:", err);
+    alert("Failed to load story. See console for details.");
   }
+}
 
-  window.onload = fetchStoryData;
-</script>
-
+window.onload = fetchStoryData;
+  </script>
 
 </body>
 </html>

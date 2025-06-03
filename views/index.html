@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/cssStyles/index.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
   <script src="https://kit.fontawesome.com/a3b1be9998.js" crossorigin="anonymous"></script>
+
 </head>
 <body>
   <div class="page-border">
@@ -34,14 +35,15 @@
 
   <section class="speakers">
     <div class="speaker">
-      <a href="/cherana.html" style="text-decoration: none; color: inherit;">
+      <a href="/cherana.html" onclick="trackClick('cherana')" style="text-decoration: none; color: inherit;">
+        <!-- <a href="/cherana.html" onclick="trackClick('cherana')" style="text-decoration: none; color: inherit;"> -->
         <img src="https://res.cloudinary.com/createownstory/image/upload/v1748703169/IMG_5632_e3jz2v.jpg" alt="Cherana">
         <h3>Cherana</h3>
       </a>
       <p>Kids Stories</p>
     </div>
     <div class="speaker">
-      <a href="/sadhana.html" style="text-decoration: none; color: inherit;">
+      <a href="/sadhana.html" onclick="trackClick('sadhana')" style="text-decoration: none; color: inherit;">
       <img src="https://res.cloudinary.com/createownstory/image/upload/v1748685713/GPAQ7401_ade4vp.jpg" alt="Sadhana">
       <h3>Sadhana</h3>
       </a>
@@ -60,13 +62,21 @@
       <p>Speaker</p>
     </div>
     <div class="speaker">
-      <a href="/seshu.html" style="text-decoration: none; color: inherit;">
+      <a href="/seshu.html" onclick="trackClick('seshu')" style="text-decoration: none; color: inherit;">
       <img src="https://res.cloudinary.com/createownstory/image/upload/v1748686301/20210316_092052_l81ih1.jpg" alt="Seshu">
       <h3>Seshu</h3>
       </a>
       <p>Speaker</p>
     </div>
   </section>
+  <section class="visitors" id="visitors">
+  <h2>Visitor Statistics</h2>
+  <div class="visitor-stats">
+    <p><strong>Total Visitors:</strong> <span id="visitor-count">0</span></p>
+    <!-- <p><strong>Your IP Location:</strong> <span id="visitor-location">Detecting...</span></p> -->
+  </div>
+</section>
+
 
   <!-- <section id="about" style="padding: 40px 20px; background-color: #eef; text-align: center;">
     <img src="images/admin.PNG" alt="Admin"> -->
@@ -93,5 +103,66 @@
     <p>&copy; 2025 Free Voices</p>
   </footer>
   </div>
+  <!-- <script>
+  async function loadVisitorStats() {
+    try {
+      // Get total visitor count
+      const countRes = await fetch('http://localhost:5000/api/visitor/count');
+      const countData = await countRes.json();
+      document.getElementById('visitor-count').textContent = countData.count;
+
+      // Get visitor's approximate location
+      const ipRes = await fetch('https://ipapi.co/json/');
+      const ipData = await ipRes.json();
+      document.getElementById('visitor-location').textContent =
+        `${ipData.city}, ${ipData.region}, ${ipData.country_name}`;
+    } catch (err) {
+      document.getElementById('visitor-location').textContent = 'Unavailable';
+      console.error('Error loading visitor stats:', err);
+    }
+  }
+
+  loadVisitorStats();
+</script> -->
+<script src="/js/config.js"></script>
+<script src="/js/api.js"></script>
+<script>
+    // const backendUrl = window.BACKEND_BASE_URL;
+
+  async function loadVisitorCount() {
+    try {
+      // Try tracking visitor
+      const trackRes = await fetch(`${window.BACKEND_BASE_URL}/api/visitor/track`, {
+        method: 'POST'
+      });
+
+      if (!trackRes.ok) throw new Error(`Track failed with status ${trackRes.status}`);
+
+      // Fetch total visitor count
+      const countRes = await fetch(`${window.BACKEND_BASE_URL}/api/visitor/count`);
+      if (!countRes.ok) throw new Error(`Count fetch failed with status ${countRes.status}`);
+
+      const data = await countRes.json();
+      const count = (data && typeof data.count === 'number') ? data.count : 0;
+
+      document.getElementById('visitor-count').textContent = count;
+    } catch (err) {
+      console.warn('Visitor tracking/count error:', err.message);
+      document.getElementById('visitor-count').textContent = '0'; // fallback to 0
+    }
+  }
+
+  loadVisitorCount();
+
+  // Track speaker click
+  function trackClick(speaker) {
+    fetch(`${window.BACKEND_BASE_URL}/api/visitor/track-click`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ speaker })
+    }).catch(err => console.error('Speaker click tracking failed:', err));
+  }
+  </script>
+
 </body>
 </html>

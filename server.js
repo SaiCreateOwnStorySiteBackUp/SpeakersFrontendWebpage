@@ -38,9 +38,9 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
-app.get('/cherana', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'cherana.html'));
-});
+// app.get('/cherana', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'views', 'cherana.html'));
+// });
 
 // TODO: add other public speaker pages here (e.g., /sadhana, /muni, etc.)
 
