@@ -1,41 +1,31 @@
+/* ===== Base ===== */
 body {
   font-family: 'Montserrat', sans-serif;
   margin: 0;
-  /* padding: 0; */
   background-color: #f4f4f4;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
+
+/* ===== Page Border Container ===== */
 .page-border {
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
   border-bottom: 4px solid transparent;
-  /* border: 4px;  /* Blue border */
-  /* margin: 20px;               /* Space from window edges */
-  /* padding: 0;                 /* Remove internal spacing */
-  /* min-height: calc(100vh - 40px);  /* Full page height minus margin */
-  box-sizing: border-box;     /* Keep padding inside border */
-  background-color: white;    /* Background inside the border */
+  background-color: white;
+  box-sizing: border-box;
+  padding: clamp(0.5rem, 2vw, 1.5rem);
 }
+
+/* ===== Navigation ===== */
 nav {
-  /* border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-bottom: 4px solid transparent;
-  background-color: #222; */
-  /* padding: 15px 10px; */
-  /* padding: 5px 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: fixed;
-  width: 100%;
-  top: 0;
-  z-index: 1000; */
   background-color: #222;
-  padding: 25px; /* increased padding to control spacing */
+  padding: clamp(1rem, 3vw, 25px);
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: fixed;
-  width: calc(100% - 20px); /* prevent going out of bounds */
+  width: calc(100% - 8px);
   left: 4px;
   right: 4px;
   top: 0;
@@ -43,56 +33,72 @@ nav {
   box-sizing: border-box;
   border-radius: 8px;
 }
+
 nav a {
   color: white;
-  margin-left: 20px;
+  margin-left: clamp(10px, 2vw, 20px);
   text-decoration: none;
   font-weight: bold;
+  font-size: clamp(0.9rem, 1.8vw, 1.1rem);
 }
+
 nav a:hover {
   text-decoration: underline;
 }
+
+/* ===== Main Content ===== */
 .container {
-  padding: 100px 20px 40px;
-  max-width: 800px;
+  padding: clamp(6rem, 15vh, 8rem) clamp(1rem, 3vw, 2rem) 3rem;
+  max-width: clamp(90%, 800px, 100%);
   margin: auto;
+  box-sizing: border-box;
 }
+
+/* ===== Admin Info Section ===== */
 .admin-info {
   text-align: center;
 }
+
 .admin-info img {
-  width: 150px;
+  width: clamp(100px, 25vw, 150px);
   border-radius: 50%;
   margin-bottom: 20px;
 }
+
 .admin-info h2 {
   margin: 10px 0;
+  font-size: clamp(1.2rem, 4vw, 2rem);
 }
+
 .admin-info p {
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
   line-height: 1.6;
   color: #333;
+  padding: 0 1rem;
 }
+
+/* ===== Footer ===== */
 footer {
   background-color: #222;
   color: white;
   text-align: center;
-  padding: 10px;
+  padding: clamp(8px, 1vw, 12px);
   position: fixed;
   bottom: 0;
   left: 4px;
   right: 4px;
-  width: calc(100% - 8px); /* leave room for 4px left/right spacing */
+  width: calc(100% - 8px);
   box-sizing: border-box;
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
   border-bottom: 4px solid transparent;
   border-radius: 8px 8px 0 0;
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
 }
 
-/* ========== RESPONSIVE STYLES ========== */
+/* ========== Responsive Enhancements ========== */
 
-/* Small Devices (phones) */
+/* Small Devices */
 @media (max-width: 600px) {
   nav {
     flex-direction: column;
@@ -127,7 +133,7 @@ footer {
   }
 }
 
-/* Medium Devices (tablets) */
+/* Medium Devices */
 @media (min-width: 601px) and (max-width: 1024px) {
   nav {
     padding: 1.2rem;
@@ -146,7 +152,7 @@ footer {
   }
 }
 
-/* Large Devices (laptops and desktops) */
+/* Large Devices */
 @media (min-width: 1025px) {
   nav a {
     font-size: 1.1rem;
@@ -157,7 +163,7 @@ footer {
   }
 }
 
-/* Extra Large Screens (TVs or large desktops) */
+/* Extra Large Screens */
 @media (min-width: 1440px) {
   .container {
     max-width: 1000px;
