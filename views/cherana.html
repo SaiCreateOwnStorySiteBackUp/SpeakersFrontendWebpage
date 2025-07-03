@@ -40,137 +40,6 @@
   <a href="#"><i class="fab fa-instagram"></i></a>
   <p>&copy; 2025 Free Voices | Follow us:</p>
 </footer>
-
-<!-- Scripts -->
-<!-- <script src="/js/config.js"></script>
-<script src="/js/api.js"></script> -->
-<!-- <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const backendBaseURL = 'http://localhost:5000'; // ✅ update if your backend runs elsewhere
-  const storiesPerPage = 5;
-  let currentPage = 1;
-  let allStories = [];
-
-  // Fetch stories from backend
-  fetch(`${backendBaseURL}/stories?email=cherana@gmail.com`)
-    .then(response => response.json())
-    .then(stories => {
-      allStories = stories;
-      if (!Array.isArray(allStories) || allStories.length === 0) {
-        document.getElementById('storySection').innerHTML = '<p>No stories posted yet.</p>';
-        return;
-      }
-      renderStories(currentPage);
-      renderPagination();
-    })
-    .catch(err => {
-      console.error('Failed to load stories:', err);
-      document.getElementById('storySection').innerHTML = '<p>Failed to load stories. Please try again later.</p>';
-    });
-
-  function renderStories(page) {
-    const container = document.getElementById('storySection');
-    container.innerHTML = '';
-    const start = (page - 1) * storiesPerPage;
-    const end = start + storiesPerPage;
-    const paginatedStories = allStories.slice(start, end);
-
-    paginatedStories.forEach(story => {
-      const storyDiv = document.createElement('div');
-      storyDiv.classList.add('story');
-
-      const likeKey = `like_${story._id}`;
-      const dislikeKey = `dislike_${story._id}`;
-      const isLiked = localStorage.getItem(likeKey) === 'true';
-      const isDisliked = localStorage.getItem(dislikeKey) === 'true';
-
-      storyDiv.innerHTML = `
-        <img src="${story.imageUrl}" alt="${story.title}" onclick="location.href='readStory.html?id=${story._id}&speaker=Cherana'">
-        <div class="story-details">
-          <h3 onclick="location.href='readStory.html?id=${story._id}&speaker=Cherana'">${story.title}</h3>
-          <p>${story.intro}</p>
-          <div class="likes">
-            <i class="fas fa-thumbs-up ${isLiked ? 'liked' : ''}" data-id="${story._id}"></i>
-            <span class="like-count" id="like-count-${story._id}">${story.likes || 0}</span>
-            <i class="fas fa-thumbs-down ${isDisliked ? 'disliked' : ''}" data-id="${story._id}"></i>
-            <span class="dislike-count" id="dislike-count-${story._id}">${story.dislikes || 0}</span>
-          </div>
-        </div>
-      `;
-      container.appendChild(storyDiv);
-    });
-  }
-
-  function renderPagination() {
-    const paginationContainer = document.getElementById('pagination');
-    paginationContainer.innerHTML = '';
-    const totalPages = Math.ceil(allStories.length / storiesPerPage);
-
-    if (totalPages <= 1) {
-      paginationContainer.style.display = 'none';
-      return;
-    }
-
-    paginationContainer.style.display = 'block';
-
-    for (let i = 1; i <= totalPages; i++) {
-      const pageLink = document.createElement('a');
-      pageLink.textContent = i;
-      if (i === currentPage) pageLink.classList.add('active');
-
-      pageLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        currentPage = i;
-        renderStories(currentPage);
-        renderPagination();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-
-      paginationContainer.appendChild(pageLink);
-    }
-  }
-
-  // Like / Dislike
-  document.getElementById('storySection').addEventListener('click', async (e) => {
-    if (e.target.classList.contains('fa-thumbs-up') || e.target.classList.contains('fa-thumbs-down')) {
-      const storyId = e.target.getAttribute('data-id');
-      const isLike = e.target.classList.contains('fa-thumbs-up');
-
-      const likeKey = `like_${storyId}`;
-      const dislikeKey = `dislike_${storyId}`;
-      const liked = localStorage.getItem(likeKey) === 'true';
-      const disliked = localStorage.getItem(dislikeKey) === 'true';
-
-      const action = isLike
-        ? (liked ? 'unlike' : 'like')
-        : (disliked ? 'undislike' : 'dislike');
-
-      const res = await fetch(`${backendBaseURL}/stories/${storyId}/${action}`, {
-        method: 'POST'
-      });
-
-      const updated = await res.json();
-      document.getElementById(`like-count-${storyId}`).textContent = updated.likes;
-      document.getElementById(`dislike-count-${storyId}`).textContent = updated.dislikes;
-
-      const likeIcon = document.querySelector(`.fa-thumbs-up[data-id="${storyId}"]`);
-      const dislikeIcon = document.querySelector(`.fa-thumbs-down[data-id="${storyId}"]`);
-
-      if (isLike) {
-        localStorage.setItem(likeKey, !liked);
-        localStorage.setItem(dislikeKey, false);
-        likeIcon.classList.toggle('liked', !liked);
-        dislikeIcon.classList.remove('disliked');
-      } else {
-        localStorage.setItem(dislikeKey, !disliked);
-        localStorage.setItem(likeKey, false);
-        dislikeIcon.classList.toggle('disliked', !disliked);
-        likeIcon.classList.remove('liked');
-      }
-    }
-  });
-});
-</script> -->
 <script src="/js/config.js"></script>
 <script src="/js/api.js"></script>
 <script>
@@ -195,38 +64,98 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('storySection').innerHTML = '<p>Failed to load stories. Please try again later.</p>';
     });
 
+  // function renderStories(page) {
+  //   const container = document.getElementById('storySection');
+  //   container.innerHTML = '';
+  //   const start = (page - 1) * storiesPerPage;
+  //   const end = start + storiesPerPage;
+  //   const paginatedStories = allStories.slice(start, end);
+  //
+  //   paginatedStories.forEach(story => {
+  //     const storyDiv = document.createElement('div');
+  //     storyDiv.classList.add('story');
+  //
+  //     const likeKey = `like_${story._id}`;
+  //     const dislikeKey = `dislike_${story._id}`;
+  //     const isLiked = localStorage.getItem(likeKey) === 'true';
+  //     const isDisliked = localStorage.getItem(dislikeKey) === 'true';
+  //
+  //     storyDiv.innerHTML = `
+  //       <img src="${story.imageUrl}" alt="${story.title}" onclick="location.href='readStory.html?id=${story._id}&speaker=Cherana'">
+  //       <div class="story-details">
+  //         <h3 onclick="location.href='readStory.html?id=${story._id}&speaker=Cherana'">${story.title}</h3>
+  //         <p>${story.intro}</p>
+  //         <div class="likes">
+  //           <i class="fas fa-thumbs-up ${isLiked ? 'liked' : ''}" data-id="${story._id}"></i>
+  //           <span class="like-count" id="like-count-${story._id}">${story.likes || 0}</span>
+  //           <i class="fas fa-thumbs-down ${isDisliked ? 'disliked' : ''}" data-id="${story._id}"></i>
+  //           <span class="dislike-count" id="dislike-count-${story._id}">${story.dislikes || 0}</span>
+  //         </div>
+  //       </div>
+  //     `;
+  //     container.appendChild(storyDiv);
+  //   });
+  // }
   function renderStories(page) {
-    const container = document.getElementById('storySection');
-    container.innerHTML = '';
-    const start = (page - 1) * storiesPerPage;
-    const end = start + storiesPerPage;
-    const paginatedStories = allStories.slice(start, end);
+  const container = document.getElementById('storySection');
+  container.innerHTML = '';
 
-    paginatedStories.forEach(story => {
-      const storyDiv = document.createElement('div');
-      storyDiv.classList.add('story');
+  const start = (page - 1) * storiesPerPage;
+  const end   = start + storiesPerPage;
+  const paginatedStories = allStories.slice(start, end);
 
-      const likeKey = `like_${story._id}`;
-      const dislikeKey = `dislike_${story._id}`;
-      const isLiked = localStorage.getItem(likeKey) === 'true';
-      const isDisliked = localStorage.getItem(dislikeKey) === 'true';
+  paginatedStories.forEach(story => {
+    /* ---------- wrapper ---------- */
+    const storyDiv = document.createElement('div');
+    storyDiv.classList.add('story');
 
-      storyDiv.innerHTML = `
-        <img src="${story.imageUrl}" alt="${story.title}" onclick="location.href='readStory.html?id=${story._id}&speaker=Cherana'">
-        <div class="story-details">
-          <h3 onclick="location.href='readStory.html?id=${story._id}&speaker=Cherana'">${story.title}</h3>
-          <p>${story.intro}</p>
-          <div class="likes">
-            <i class="fas fa-thumbs-up ${isLiked ? 'liked' : ''}" data-id="${story._id}"></i>
-            <span class="like-count" id="like-count-${story._id}">${story.likes || 0}</span>
-            <i class="fas fa-thumbs-down ${isDisliked ? 'disliked' : ''}" data-id="${story._id}"></i>
-            <span class="dislike-count" id="dislike-count-${story._id}">${story.dislikes || 0}</span>
-          </div>
-        </div>
-      `;
-      container.appendChild(storyDiv);
-    });
-  }
+    /* ---------- media preview ---------- */
+    const img = document.createElement('img');
+    img.src   = story.imageUrl;
+    img.alt   = 'story‑image';
+    img.onclick = () => location.href =
+      `readStory.html?id=${story._id}&speaker=Cherana`;
+    storyDiv.appendChild(img);
+
+    /* ---------- details ---------- */
+    const details = document.createElement('div');
+    details.className = 'story-details';
+
+    /* TITLE — render as REAL HTML (Option 1) */
+    const h3 = document.createElement('h3');
+    h3.onclick = () =>
+      location.href = `readStory.html?id=${story._id}&speaker=Cherana`;
+    h3.innerHTML = story.title;          // ← real HTML, not escaped
+    details.appendChild(h3);
+
+    /* INTRO */
+    const pIntro = document.createElement('p');
+    pIntro.innerHTML = story.intro || '';
+    details.appendChild(pIntro);
+
+    /* ---------- like / dislike ---------- */
+    const likeWrap = document.createElement('div');
+    likeWrap.className = 'likes';
+
+    const likeKey    = `like_${story._id}`;
+    const dislikeKey = `dislike_${story._id}`;
+    const isLiked    = localStorage.getItem(likeKey) === 'true';
+    const isDisliked = localStorage.getItem(dislikeKey) === 'true';
+
+    likeWrap.innerHTML = `
+      <i class="fas fa-thumbs-up ${isLiked ? 'liked' : ''}"   data-id="${story._id}"></i>
+      <span class="like-count"    id="like-count-${story._id}">${story.likes    ?? 0}</span>
+      <i class="fas fa-thumbs-down ${isDisliked ? 'disliked' : ''}" data-id="${story._id}"></i>
+      <span class="dislike-count" id="dislike-count-${story._id}">${story.dislikes ?? 0}</span>
+    `;
+    details.appendChild(likeWrap);
+
+    /* ---------- assemble ---------- */
+    storyDiv.appendChild(details);
+    container.appendChild(storyDiv);
+  });
+}
+
 
   function renderPagination() {
     const paginationContainer = document.getElementById('pagination');
