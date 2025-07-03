@@ -119,6 +119,37 @@ nav a:hover {
 }
 
 /* ===== Footer ===== */
+/* footer {
+  background-color: #222;
+  color: white;
+  text-align: center;
+  padding: clamp(8px, 1vw, 12px);
+  margin: 0 4px;
+  box-sizing: border-box;
+  border-radius: 8px 8px 0 0;
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
+  opacity: 0;
+  display: none;
+} */
+/* footer {
+  background-color: #222;
+  color: white;
+  text-align: center;
+  padding: clamp(8px, 1vw, 12px);
+  margin: 0 4px;
+  box-sizing: border-box;
+  border-radius: 8px 8px 0 0;
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 1000;
+} */
+
 footer {
   background-color: #222;
   color: white;
@@ -128,7 +159,20 @@ footer {
   box-sizing: border-box;
   border-radius: 8px 8px 0 0;
   font-size: clamp(0.85rem, 1.8vw, 1rem);
+
+  transform: translateY(100%);
+  /* opacity: 0; */
+  transition: transform 0.4s ease, opacity 0.4s ease;
 }
+
+footer.footer-visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+
+
+
 
 /* ========== Responsive Adjustments ========== */
 

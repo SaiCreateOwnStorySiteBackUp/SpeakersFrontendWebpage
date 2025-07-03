@@ -28,9 +28,15 @@
     <h2>Seshu</h2>
     <p>Specializes in Kids Stories. Brings imagination to life through colorful characters and fun adventures.</p>
   </div>
+  <!-- Community Stories Link -->
+  <div class="community-link">
+    <h3>📸 Explore Community Visual Stories</h3>
+    <p>View public contributions including images and videos submitted by locals across states and localities.</p>
+    <a href="/seshuStory.html" class="visit-btn">Visit Community Gallery</a>
+  </div>
 
   <!-- Stories Section -->
-  <div class="story-section" id="storySection"></div>
+  <!-- <div class="story-section" id="storySection"></div> -->
   <div class="pagination" id="pagination"></div>
 </div>
 
@@ -66,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     allStories = await fetchFromAPI(`/stories?email=${encodeURIComponent(email)}`);
     if (!Array.isArray(allStories) || allStories.length === 0) {
-      document.getElementById('storySection').innerHTML = '<p>No stories posted yet.</p>';
+      // document.getElementById('storySection').innerHTML = '<p>No stories posted yet.</p>';
       return;
     }
     renderStories(currentPage);

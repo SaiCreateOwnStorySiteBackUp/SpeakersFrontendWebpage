@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seshu Stories</title>
+  <link rel="stylesheet" href="/cssStyles/splStoryPage.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="speaker-info">
+      <img src="/images/seshu-profile.jpg" alt="Seshu">
+      <p><strong>Seshu</strong></p>
+      <p>Public Reporter & Contributor. Highlighting local issues and voices.</p>
+    </div>
+
+    <div class="main-content">
+      <div class="intro-content">
+        <h2>Community Voices</h2>
+        <p>This page showcases real stories from different states and localities. People can share their experiences to bring awareness and change.</p>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="Search by title, state, or locality..." />
+        <select id="stateSelect" onchange="updateLocalityOptions()">
+          <option value="">Select State</option>
+        </select>
+        <select id="localitySelect">
+          <option value="">Select Locality</option>
+        </select>
+        <button onclick="applyFilters()">Search</button>
+      </div>
+
+      <div class="media-gallery" id="mediaGallery"></div>
+      <p id="noResultsMsg" style="display:none; text-align:center; color: red; font-weight: bold;">
+  No content available with your search
+</p>
+      <div id="pagination" class="pagination"></div>
+
+      <div class="submit-box">
+        <h3>Public Submission</h3>
+        <input type="text" id="mediaTitle" placeholder="Title" required>
+        <input type="text" id="mediaUrl" placeholder="Image or YouTube URL" required>
+        <select id="submitStateSelect" required>
+          <option value="">Select State</option>
+        </select>
+        <input type="text" id="localityInput" placeholder="Enter Locality" required>
+        <button id="submitMediaBtn" onclick="submitMedia()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/api.js"></script>
+
+  <script>
+    const STORIES_PER_PAGE = 20;
+    let currentPage = 1;
+    let allStories = [];
+    const email = "mallamuruvenkat@gmail.com";
+
+    const badWords = ["sex", "porn", "xxx", "nude", "fuck", "adult"];
+
+    function containsBadContent(text) {
+      return badWords.some(word => text.toLowerCase().includes(word));
+    }
+
+    function validateSubmission() {
+      const url = document.getElementById("mediaUrl").value;
+      const title = document.getElementById("mediaTitle").value;
+      const btn = document.getElementById("submitMediaBtn");
+      btn.disabled = containsBadContent(url) || containsBadContent(title);
+    }
+
+    document.getElementById("mediaUrl").addEventListener("input", validateSubmission);
+    document.getElementById("mediaTitle").addEventListener("input", validateSubmission);
+
+    async function updateLocalityOptions() {
+      const state = document.getElementById("stateSelect").value;
+      const localitySelect = document.getElementById("localitySelect");
+      localitySelect.innerHTML = '<option value="">Select Locality</option>';
+      if (!state) return;
+      try {
+        const res = await fetchFromAPI(`/localities/${encodeURIComponent(state)}`);
+        if (res.success && res.localities) {
+          res.localities.forEach(loc => {
+            const opt = document.createElement("option");
+            opt.value = loc;
+            opt.textContent = loc;
+            localitySelect.appendChild(opt);
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load localities:", err);
+      }
+    }
+
+    async function loadStates() {
+      try {
+        const res = await fetchFromAPI("/states");
+        if (res.success && res.states) {
+          const stateSelects = [document.getElementById("stateSelect"), document.getElementById("submitStateSelect")];
+          stateSelects.forEach(select => {
+            res.states.forEach(state => {
+              const opt = document.createElement("option");
+              opt.value = state.state;
+              opt.textContent = state.state;
+              select.appendChild(opt);
+            });
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load states:", err);
+      }
+    }
+
+    function createMediaCard(title, url, state, locality, createdAt) {
+      const card = document.createElement("div");
+      card.className = "media-card";
+      card.dataset.title = title.toLowerCase();
+      card.dataset.state = state.toLowerCase();
+      card.dataset.locality = locality.toLowerCase();
+
+      const dateStr = new Date(createdAt).toISOString().split("T")[0];
+
+      if (url.includes("youtube.com") || url.includes("youtu.be")) {
+        // let embedUrl = url.includes("watch?v=") ? url.replace("watch?v=", "embed/") : url;
+        // embedUrl = embedUrl.replace("youtu.be/", "youtube.com/embed/");
+        // card.innerHTML = `
+        //   <iframe
+        //     src="${embedUrl}"
+        //     frameborder="0"
+        //     allowfullscreen
+        //     onmouseenter="this.src='${embedUrl}?autoplay=1'"
+        //     onmouseleave="this.src='${embedUrl}'">
+        //   </iframe>
+        //   <div class="meta">${title}<br>${locality}, ${state}<br>${dateStr}</div>
+        // `;
+        let embedUrl = "";
+
+        if (url.includes("watch?v=")) {
+          embedUrl = url.replace("watch?v=", "embed/").split("&")[0];
+        } else if (url.includes("youtu.be/")) {
+          const videoId = url.split("youtu.be/")[1].split("?")[0];
+          embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        } else if (url.includes("youtube.com/shorts/")) {
+          const videoId = url.split("shorts/")[1].split("?")[0];
+          embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        } else {
+          embedUrl = url;
+        }
+
+        card.innerHTML = `
+        <div class="video-wrapper">
+          <iframe
+            src="${embedUrl}"
+            frameborder="0"
+            allow="autoplay; encrypted-media"
+            allowfullscreen
+            muted
+            onmouseenter="this.src='${embedUrl}?autoplay=1&mute=1'"
+            onmouseleave="this.src='${embedUrl}'">
+          </iframe>
+        </div>
+        <div class="meta">${title}<br>${locality}, ${state}<br>${dateStr}</div>
+      `;
+      } else {
+        card.innerHTML = `
+          <img src="${url}" alt="${title}" />
+          <div class="meta">${title}<br>${locality}, ${state}<br>${dateStr}</div>
+        `;
+      }
+
+      return card;
+    }
+
+    async function submitMedia() {
+      const title = document.getElementById("mediaTitle").value;
+      const url = document.getElementById("mediaUrl").value;
+      const state = document.getElementById("submitStateSelect").value;
+      const locality = document.getElementById("localityInput").value;
+
+      if (!title || !url || !state || !locality) {
+        alert("All fields are required");
+        return;
+      }
+
+      const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
+
+      const payload = {
+        email,
+        title,
+        state,
+        locality,
+        description: "",
+        youtubeLink: isYouTube ? url : "",
+        imageUrl: isYouTube ? "" : url
+      };
+
+      try {
+        const res = await fetchFromAPI("/splStory/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.success) {
+          alert("✅ Story submitted");
+          location.reload();
+        } else {
+          alert("❌ Failed: " + res.message);
+        }
+      } catch (err) {
+        console.error("❌ Error submitting:", err);
+        alert("Server error");
+      }
+    }
+
+    function renderStories() {
+    const gallery = document.getElementById("mediaGallery");
+    const noResultsMsg = document.getElementById("noResultsMsg");
+    gallery.innerHTML = '';
+
+    const filtered = filterStories();
+
+    if (filtered.length === 0) {
+      noResultsMsg.style.display = "block";
+      document.getElementById("pagination").style.display = "none";
+      return;
+    }
+
+    noResultsMsg.style.display = "none";
+
+    const start = (currentPage - 1) * STORIES_PER_PAGE;
+    const end = start + STORIES_PER_PAGE;
+
+    filtered.slice(start, end).forEach(card => gallery.appendChild(card));
+  }
+
+
+    function renderPagination() {
+      const pagination = document.getElementById("pagination");
+      pagination.innerHTML = '';
+
+      const filtered = filterStories();
+      const totalPages = Math.ceil(filtered.length / STORIES_PER_PAGE);
+
+      if (totalPages <= 1) {
+        pagination.style.display = "none";
+        return;
+      }
+
+      pagination.style.display = "flex";
+
+      const createBtn = (label, disabled, active, onClick) => {
+        const btn = document.createElement("button");
+        btn.textContent = label;
+        if (disabled) btn.classList.add("disabled");
+        if (active) btn.classList.add("active");
+        if (onClick) btn.onclick = onClick;
+        return btn;
+      };
+
+      pagination.appendChild(createBtn("<<", currentPage === 1, false, () => {
+        currentPage = 1;
+        renderStories();
+        renderPagination();
+      }));
+
+      pagination.appendChild(createBtn("<", currentPage === 1, false, () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderStories();
+          renderPagination();
+        }
+      }));
+
+      for (let i = 1; i <= totalPages; i++) {
+        pagination.appendChild(createBtn(i, false, i === currentPage, () => {
+          currentPage = i;
+          renderStories();
+          renderPagination();
+        }));
+      }
+
+      pagination.appendChild(createBtn(">", currentPage === totalPages, false, () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderStories();
+          renderPagination();
+        }
+      }));
+
+      pagination.appendChild(createBtn(">>", currentPage === totalPages, false, () => {
+        currentPage = totalPages;
+        renderStories();
+        renderPagination();
+      }));
+    }
+
+    function filterStories() {
+    const search = document.getElementById("searchInput").value.toLowerCase();
+    const selectedState = document.getElementById("stateSelect").value.toLowerCase();
+    const selectedLocality = document.getElementById("localitySelect").value.toLowerCase();
+
+    return allStories.filter(card => {
+      const title = card.dataset.title;
+      const state = card.dataset.state;
+      const locality = card.dataset.locality;
+
+      const matchSearch =
+        !search || title.includes(search) || state.includes(search) || locality.includes(search);
+
+      const matchState = !selectedState || state === selectedState;
+      const matchLocality = !selectedLocality || locality === selectedLocality;
+
+      return matchSearch && matchState && matchLocality;
+    });
+  }
+
+
+    function applyFilters() {
+      currentPage = 1;
+      renderStories();
+      renderPagination();
+    }
+
+    window.onload = async () => {
+      await loadStates();
+      document.getElementById("searchInput").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        applyFilters();
+      }
+    });
+      try {
+        const res = await fetchFromAPI("/splStory/fetch");
+        allStories = res.map(s => createMediaCard(s.title, s.youtubeLink || s.imageUrl, s.state, s.locality, s.createdAt));
+        renderStories();
+        renderPagination();
+      } catch (err) {
+        console.error("Failed to load stories:", err);
+      }
+    };
+  </script>
+</body>
+</html>
