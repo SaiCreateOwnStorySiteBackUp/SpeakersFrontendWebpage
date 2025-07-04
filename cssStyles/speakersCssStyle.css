@@ -58,22 +58,38 @@ footer a {
 .container {
   display: flex;
   flex-direction: row;
-  margin: 100px 20px 60px; /* spacing below header and above footer */
+  /* flex-wrap:wrap; */
+  margin: 70px 20px 60px; /* spacing below header and above footer */
+  gap: 20px;
+}
+/* New wrapper for right side */
+.right-column {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  /* padding: 20px; */
 }
 
 .speaker-info {
-  width: 30%;
+  width: 100%;
+  max-width: 300px; /* 🔑 limits how big image column gets */
   padding: 20px;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .speaker-info img {
   width: 100%;
+  height: auto;
   border-radius: 10px;
+  object-fit: cover;
+  display: block;
 }
 
 .story-section {
-  width: 70%;
+  flex-grow: 1; /* ✅ take all remaining space */
   padding: 20px;
+  min-width: 0;
 }
 
 .story {
@@ -184,6 +200,7 @@ footer a {
 }
 
 .pagination {
+  width:100%;
   text-align: center;
   margin-top: 30px;
 }
@@ -199,4 +216,25 @@ footer a {
 
 .pagination a:hover {
   background: #0056b3;
+}
+@media (max-width: 768px) {
+  .speaker-info,
+ .story-section {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .container {
+    flex-direction: column;
+  }
+
+  .story {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .story img {
+    width: 80%;
+    height: auto;
+  }
 }

@@ -12,6 +12,7 @@
       <img src="/images/seshu-profile.jpg" alt="Seshu">
       <p><strong>Seshu</strong></p>
       <p>Public Reporter & Contributor. Highlighting local issues and voices.</p>
+      <button id="backToDashboard" onclick="window.location.href='seshu.html'">⬅ Back to Dashboard</button>
     </div>
 
     <div class="main-content">
@@ -20,7 +21,7 @@
         <p>This page showcases real stories from different states and localities. People can share their experiences to bring awareness and change.</p>
       </div>
 
-      <div class="filter-bar">
+      <!-- <div class="filter-bar">
         <input type="text" id="searchInput" placeholder="Search by title, state, or locality..." />
         <select id="stateSelect" onchange="updateLocalityOptions()">
           <option value="">Select State</option>
@@ -29,7 +30,34 @@
           <option value="">Select Locality</option>
         </select>
         <button onclick="applyFilters()">Search</button>
+      </div> -->
+
+      <!-- ‑‑‑ Filter bar ‑‑‑ -->
+      <div class="filter-bar">
+        <input  type="text"  id="searchInput"
+                placeholder="Search title, state, or locality…">
+
+        <!-- STATE -->
+        <input  type="text"  id="stateInput"  list="stateOptions"
+                placeholder="Select State">
+        <datalist id="stateOptions"></datalist>
+        <small id="stateWarn" class="warn"></small>
+
+        <!-- LOCALITY -->
+        <input  type="text"  id="localityInputFilter" list="localityOptions"
+                placeholder="Select Locality">
+        <datalist id="localityOptions"></datalist>
+        <small id="locWarn" class="warn"></small>
+
+        <button onclick="applyFilters()">Search</button>
       </div>
+
+      <!-- ‑‑‑ “submit a story” block (same trick) ‑‑‑ -->
+       <select id="submitStateSelect" hidden></select> <!-- keep for validation -->
+      <!-- <input  type="text"  id="submitStateSelect" list="stateOptions"
+              placeholder="Select State" required> -->
+      <datalist id="stateOptionsSubmit"></datalist>
+      <small id="submitStateWarn" class="warn"></small>
 
       <div class="media-gallery" id="mediaGallery"></div>
       <p id="noResultsMsg" style="display:none; text-align:center; color: red; font-weight: bold;">
@@ -37,16 +65,30 @@
 </p>
       <div id="pagination" class="pagination"></div>
 
-      <div class="submit-box">
-        <h3>Public Submission</h3>
-        <input type="text" id="mediaTitle" placeholder="Title" required>
-        <input type="text" id="mediaUrl" placeholder="Image or YouTube URL" required>
-        <select id="submitStateSelect" required>
-          <option value="">Select State</option>
-        </select>
-        <input type="text" id="localityInput" placeholder="Enter Locality" required>
-        <button id="submitMediaBtn" onclick="submitMedia()">Submit</button>
-      </div>
+      <!-- ─── PUBLIC SUBMISSION ───────────────────────────────────────────── -->
+<div class="submit-box">
+  <h3>Public Submission</h3>
+
+  <!-- Your Name -->
+  <input type="text"  id="pubName" placeholder="Your Name" maxlength="60" autocomplete="name">
+  <!-- Mobile Number -->
+  <input type="tel"   id="pubMobile" placeholder="9123456789" maxlength="10" pattern="\d{10}">
+  <!-- Story Title -->
+  <input type="text"  id="mediaTitle" placeholder="Title" maxlength="120">
+  <!-- Media URL -->
+  <input type="text"  id="mediaUrl" placeholder="Image or YouTube URL" required>
+  <!-- State dropdown (populated on load) -->
+  <input  type="text"  id="submitStateInput" list="stateOptions" required placeholder="Select State">
+  <!-- Locality -->
+  <input type="text"  id="localityInput" placeholder="Enter Locality" maxlength="60" required>
+  <small id="publicWarn" class="warn" style="color:red;"></small>
+  <!-- SUBMIT -->
+  <button id="submitMediaBtn" onclick="publicSubmit()">Submit</button>
+  <!-- feedback -->
+  <p id="subFeedback" style="display:none;margin-top:8px;color:#007b55;font-weight:600;">
+    Your submission is under review. We will post the story within 24 hours.
+  </p>
+</div>
     </div>
   </div>
 
@@ -76,7 +118,7 @@
     document.getElementById("mediaTitle").addEventListener("input", validateSubmission);
 
     async function updateLocalityOptions() {
-      const state = document.getElementById("stateSelect").value;
+      const state = document.getElementById("submitStateSelect").value;
       const localitySelect = document.getElementById("localitySelect");
       localitySelect.innerHTML = '<option value="">Select Locality</option>';
       if (!state) return;
@@ -95,24 +137,139 @@
       }
     }
 
-    async function loadStates() {
-      try {
-        const res = await fetchFromAPI("/states");
-        if (res.success && res.states) {
-          const stateSelects = [document.getElementById("stateSelect"), document.getElementById("submitStateSelect")];
-          stateSelects.forEach(select => {
-            res.states.forEach(state => {
-              const opt = document.createElement("option");
-              opt.value = state.state;
-              opt.textContent = state.state;
-              select.appendChild(opt);
-            });
-          });
-        }
-      } catch (err) {
-        console.error("Failed to load states:", err);
+    /* ------------------------------------------------------------
+   0.  in‑memory caches
+    ------------------------------------------------------------ */
+    let allStates     = [];            // strings, already sorted
+    let state2LocsMap = {};            // { "Telangana": ["Gangaram", "…"] }
+
+    /* ------------------------------------------------------------
+       1.  tiny util helpers
+    ------------------------------------------------------------ */
+    const asciiOnly = str => /^[A-Za-z\s]*$/.test(str);
+    const topFive   = arr => arr.slice(0,5);
+    /* ------------------------------------------------------------
+       2.  load states + build maps  ➜  one network round‑trip
+    ------------------------------------------------------------ */
+    // async function loadStates() {
+    //   try {
+    //     const res = await fetchFromAPI("/states");
+    //     if (res.success && res.states) {
+    //       const stateSelects = [document.getElementById("stateSelect"), document.getElementById("submitStateSelect")];
+    //       stateSelects.forEach(select => {
+    //         res.states.forEach(state => {
+    //           const opt = document.createElement("option");
+    //           opt.value = state.state;
+    //           opt.textContent = state.state;
+    //           select.appendChild(opt);
+    //         });
+    //       });
+    //     }
+    //   } catch (err) {
+    //     console.error("Failed to load states:", err);
+    //   }
+    // }
+    async function loadStates(){
+    try{
+      const res = await fetchFromAPI('/states');
+      if(!(res.success && Array.isArray(res.states))) return;
+
+      allStates = res.states.map(s=>s.state).sort();
+
+      /* locality map for instant lookup */
+      for(const s of res.states){
+        const locs = await fetchFromAPI(`/localities/${encodeURIComponent(s.state)}`);
+        state2LocsMap[s.state] = (locs.success?locs.localities:[]).sort();
       }
+
+      populateStateDatalists('');
+      /* ── NEW: also fill the submission <select> ───────────────── */
+    const submitSel = document.getElementById('submitStateSelect');
+    submitSel.innerHTML = `<option value="">Select State</option>`;
+    allStates.forEach(st=>{
+      const opt = document.createElement('option');
+      opt.value = st;
+      opt.textContent = st;
+      submitSel.appendChild(opt);
+    });
+    }catch(e){ console.error('state load',e); }
+  }
+
+  /* ------------------------------------------------------------
+   3.  datalist population
+------------------------------------------------------------ */
+function populateStateDatalists(filter){
+  const list   = document.getElementById('stateOptions');
+  const list2  = document.getElementById('stateOptionsSubmit');
+  [list,list2].forEach(l=>l.innerHTML='');
+
+  const matched = allStates
+      .filter(s=>s.toLowerCase().startsWith(filter.toLowerCase()))
+      .sort();
+
+  (matched.length?topFive(matched):['State not found']).forEach(txt=>{
+    const opt=document.createElement('option');
+    opt.value = txt;
+    list.appendChild(opt.cloneNode());
+    list2.appendChild(opt);
+  });
+}
+
+function populateLocalityDatalist(state, filter){
+  const list = document.getElementById('localityOptions');
+  list.innerHTML = '';
+
+  const pool = state2LocsMap[state] || [];
+  const matched = pool
+      .filter(l=>l.toLowerCase().startsWith(filter.toLowerCase()))
+      .sort();
+
+  (matched.length?topFive(matched):['Locality not found']).forEach(txt=>{
+    const opt=document.createElement('option');
+    opt.value = txt;
+    list.appendChild(opt);
+  });
+}
+/* ------------------------------------------------------------
+   4.  wire up inputs  (runs once, after DOM ready)
+------------------------------------------------------------ */
+function hookSearchInputs(){
+  const stateIn     = document.getElementById('stateInput');
+  const stateWarn   = document.getElementById('stateWarn');
+  const locIn       = document.getElementById('localityInputFilter');
+  const locWarn     = document.getElementById('locWarn');
+
+  /* state typing */
+  stateIn.addEventListener('input', e=>{
+    const v = e.target.value;
+    if(!asciiOnly(v)){
+      stateWarn.textContent='Special characters not allowed'; stateWarn.style.display='block';
+      return;
     }
+    stateWarn.style.display='none';
+    populateStateDatalists(v);
+    populateLocalityDatalist(v.trim(), '');      // reset locality list
+  });
+
+  /* locality typing (depends on chosen state) */
+  locIn.addEventListener('input', e=>{
+    const v = e.target.value;
+    if(!asciiOnly(v)){
+      locWarn.textContent='Special characters not allowed'; locWarn.style.display='block';
+      return;
+    }
+    locWarn.style.display='none';
+    populateLocalityDatalist(stateIn.value.trim(), v);
+  });
+}
+
+/* ------------------------------------------------------------
+   5.  run on page ready
+------------------------------------------------------------ */
+window.addEventListener('DOMContentLoaded', async ()=>{
+  await loadStates();        // build caches + first <datalist>
+  hookSearchInputs();        // attach listeners
+});
 
     function createMediaCard(title, url, state, locality, createdAt) {
       const card = document.createElement("div");
@@ -174,47 +331,198 @@
       return card;
     }
 
-    async function submitMedia() {
-      const title = document.getElementById("mediaTitle").value;
-      const url = document.getElementById("mediaUrl").value;
-      const state = document.getElementById("submitStateSelect").value;
-      const locality = document.getElementById("localityInput").value;
+    // async function submitMedia() {
+    //   const title = document.getElementById("mediaTitle").value;
+    //   const url = document.getElementById("mediaUrl").value;
+    //   const state = document.getElementById("submitStateSelect").value;
+    //   const locality = document.getElementById("localityInput").value;
+    //
+    //   if (!title || !url || !state || !locality) {
+    //     alert("All fields are required");
+    //     return;
+    //   }
+    //
+    //   const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
+    //
+    //   const payload = {
+    //     email,
+    //     title,
+    //     state,
+    //     locality,
+    //     description: "",
+    //     youtubeLink: isYouTube ? url : "",
+    //     imageUrl: isYouTube ? "" : url
+    //   };
+    //
+    //   try {
+    //     const res = await fetchFromAPI("/splStory/upload", {
+    //       method: "POST",
+    //       headers: { "Content-Type": "application/json" },
+    //       body: JSON.stringify(payload)
+    //     });
+    //
+    //     if (res.success) {
+    //       alert("✅ Story submitted");
+    //       location.reload();
+    //     } else {
+    //       alert("❌ Failed: " + res.message);
+    //     }
+    //   } catch (err) {
+    //     console.error("❌ Error submitting:", err);
+    //     alert("Server error");
+    //   }
+    // }
+    /* ─── VALIDATION HELPERS ───────────────────────────── */
+const RGX_ALPHA     = /^[A-Za-z\s]+$/;           // letters + spaces
+const RGX_TITLE     = /^[A-Za-z\s,\.]+$/;        // letters / spaces / , / .
+const RGX_MOBILE10  = /^\d{10}$/;                // exactly 10 digits
 
-      if (!title || !url || !state || !locality) {
-        alert("All fields are required");
-        return;
-      }
+function showErr(msg){
+  alert("❌ " + msg);
+}
 
-      const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
+/* ─── MAIN HANDLER ─────────────────────────────────── */
+// async function publicSubmit(){
+//   /* grab inputs */
+//   const name      = document.getElementById("pubName").value.trim();
+//   const mobile    = document.getElementById("pubMobile").value.trim();
+//   const title     = document.getElementById("mediaTitle").value.trim();
+//   const url       = document.getElementById("mediaUrl").value.trim();
+//   const state     = document.getElementById("submitStateInput").value.trim();
+//   const locality  = document.getElementById("localityInput").value.trim();
+//
+//   /* client‑side validation */
+//   // if(!name || !mobile || !title || !url || !state || !locality)
+//   if(!title || !url || !state || !locality){
+//     return showErr("All fields are required.");
+//   }
+//   if(name   && !RGX_ALPHA.test(name))         return showErr("Name – only letters and spaces.");
+//   if(mobile && !RGX_MOBILE10.test(mobile))    return showErr("Mobile – 10 digits only.");
+//   if(title  && !RGX_TITLE.test(title))        return showErr("Title – letters, spaces, comma, full‑stop only.");
+//   if(!RGX_ALPHA.test(state))        return showErr("State – only letters and spaces.");
+//   if(!RGX_ALPHA.test(locality))     return showErr("Locality – only letters and spaces.");
+//
+//   /* build payload for backend */
+//   const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
+//   const payload = {
+//     name,
+//     mobile,
+//     email: "mallamuruvenkat@gmail.com",   // Seshu’s default
+//     title,
+//     state,
+//     locality,
+//     description: "",
+//     youtubeLink : isYouTube ? url : "",
+//     imageUrl    : isYouTube ? ""  : url
+//   };
+//
+//   try{
+//     /* call a small backend route that:
+//        1. stores / queues the submission
+//        2. sends an email to sabchd@gmail.com
+//        You’ll add this route shortly (see next section)            */
+//     const res = await fetchFromAPI("/public-submissions",{
+//       method:"POST",
+//       headers:{ "Content-Type":"application/json" },
+//       body: JSON.stringify(payload)
+//     });
+//
+//     if(res.success){
+//       document.getElementById("subFeedback").style.display = "block";
+//       document.getElementById("submitMediaBtn").disabled = true;          // prevent double‑submit
+//     }else{
+//       showErr(res.message || "Server rejected the submission.");
+//     }
+//   }catch(err){
+//     console.error(err);
+//     showErr("Network / server error.");
+//   }
+// }
+async function publicSubmit () {
+  const btn = document.getElementById("submitMediaBtn");
+  btn.disabled = true; // disable IMMEDIATELY on click to avoid multiple submits
+  /* grab inputs --------------------------------------------------- */
+  const name     = document.getElementById("pubName").value.trim();
+  const mobile   = document.getElementById("pubMobile").value.trim();
+  const title    = document.getElementById("mediaTitle").value.trim();
+  const url      = document.getElementById("mediaUrl").value.trim();
+  const state    = document.getElementById("submitStateInput").value.trim();
+  const locality = document.getElementById("localityInput").value.trim();
 
-      const payload = {
-        email,
-        title,
-        state,
-        locality,
-        description: "",
-        youtubeLink: isYouTube ? url : "",
-        imageUrl: isYouTube ? "" : url
-      };
+  /* ----- REQUIRED‑FIELD CHECK ----------------------------------- */
+  if (!title || !url || !state || !locality) {
+    btn.disabled = false; // re-enable in case of error
+    return showErr("Title, URL, State and Locality are required.");
+  }
 
-      try {
-        const res = await fetchFromAPI("/splStory/upload", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
+  /* ----- OPTIONAL‑FIELD + FORMAT VALIDATION --------------------- */
+  if (name && !RGX_ALPHA.test(name)) {
+    btn.disabled = false;
+    return showErr("Name – only letters and spaces.");
+  }
+  if (mobile && !RGX_MOBILE10.test(mobile)) {
+    btn.disabled = false;
+    return showErr("Mobile – 10 digits only.");
+  }
+  if (title && !RGX_TITLE.test(title)) {
+    btn.disabled = false;
+    return showErr("Title – letters, spaces, comma or full‑stop only.");
+  }
+  if (!RGX_ALPHA.test(state)) {
+    btn.disabled = false;
+    return showErr("State – only letters and spaces.");
+  }
+  if (!RGX_ALPHA.test(locality)) {
+    btn.disabled = false;
+    return showErr("Locality – only letters and spaces.");
+  }
 
-        if (res.success) {
-          alert("✅ Story submitted");
-          location.reload();
-        } else {
-          alert("❌ Failed: " + res.message);
-        }
-      } catch (err) {
-        console.error("❌ Error submitting:", err);
-        alert("Server error");
-      }
+  /* ----- BUILD BACKEND PAYLOAD ---------------------------------- */
+  const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
+  const payload   = {
+    name,
+    mobile,
+    email       : "mallamuruvenkat@gmail.com",   // fixed owner e‑mail
+    title,
+    state,
+    locality,
+    description : "",
+    youtubeLink : isYouTube ? url : "",
+    imageUrl    : isYouTube ? ""  : url
+  };
+
+  /* ----- SEND TO BACKEND --------------------------------------- */
+  try {
+    const res = await fetchFromAPI("/public-submissions", {
+      method  : "POST",
+      headers : { "Content-Type": "application/json" },
+      body    : JSON.stringify(payload)
+    });
+
+    if (res.success) {
+      document.getElementById("subFeedback").style.display = "block";
+
+      // ✅ Clear input fields after success
+      document.getElementById("pubName").value = "";
+      document.getElementById("pubMobile").value = "";
+      document.getElementById("mediaTitle").value = "";
+      document.getElementById("mediaUrl").value = "";
+      document.getElementById("submitStateInput").value = "";
+      document.getElementById("localityInput").value = "";
+      /* nice feedback + lock button to avoid double‑submit */
+      // document.getElementById("subFeedback").style.display = "block";
+      // document.getElementById("submitMediaBtn").disabled   = true;
+    } else {
+      showErr(res.message || "Server rejected the submission.");
+      btn.disabled = false; // re-enable if server rejected
     }
+  } catch (err) {
+    console.error(err);
+    showErr("Network / server error.");
+    btn.disabled = false;
+  }
+}
+
 
     function renderStories() {
     const gallery = document.getElementById("mediaGallery");
@@ -300,8 +608,8 @@
 
     function filterStories() {
     const search = document.getElementById("searchInput").value.toLowerCase();
-    const selectedState = document.getElementById("stateSelect").value.toLowerCase();
-    const selectedLocality = document.getElementById("localitySelect").value.toLowerCase();
+    const selectedState = document.getElementById("stateInput").value.toLowerCase();
+    const selectedLocality = document.getElementById("localityInputFilter").value.toLowerCase();
 
     return allStories.filter(card => {
       const title = card.dataset.title;

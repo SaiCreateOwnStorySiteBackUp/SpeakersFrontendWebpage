@@ -30,8 +30,10 @@
   </div>
 
   <!-- Stories Section -->
-  <div class="story-section" id="storySection"></div>
-  <div class="pagination" id="pagination"></div>
+  <div class="right-column">
+    <div class="story-section" id="storySection"></div>
+    <div class="pagination" id="pagination"></div>
+  </div>
 </div>
 
 <footer id="footer">
@@ -44,6 +46,19 @@
 <script src="/js/api.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  /* ───────────────────────────────────
+     0.  SPEAKER NAME  →  slug
+  ─────────────────────────────────── */
+  /** Derive it from the page header (or hard‑code a fallback) */
+  const speakerName = document
+        .querySelector('.speaker-info h2')?.textContent.trim() || 'Speaker';
+
+  /** Pre‑encoded once so we don’t call encodeURIComponent repeatedly */
+  const speakerSlug = encodeURIComponent(speakerName);
+
+  /* ───────────────────────────────────
+     1.  FETCH + RENDER
+  ─────────────────────────────────── */
   const storiesPerPage = 5;
   let currentPage = 1;
   let allStories = [];
@@ -53,7 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(stories => {
       allStories = stories;
       if (!Array.isArray(allStories) || allStories.length === 0) {
-        document.getElementById('storySection').innerHTML = '<p>No stories posted yet.</p>';
+        document.getElementById('storySection').innerHTML =
+          '<p>No stories posted yet.</p>';
         return;
       }
       renderStories(currentPage);
@@ -61,7 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(err => {
       console.error('Failed to load stories:', err);
-      document.getElementById('storySection').innerHTML = '<p>Failed to load stories. Please try again later.</p>';
+      document.getElementById('storySection').innerHTML =
+        '<p>Failed to load stories. Please try again later.</p>';
     });
 
   // function renderStories(page) {
@@ -96,65 +113,142 @@ document.addEventListener('DOMContentLoaded', () => {
   //     container.appendChild(storyDiv);
   //   });
   // }
+  /* ───────────────────────────────────
+     2.  STORY CARDS
+  ─────────────────────────────────── */
   function renderStories(page) {
-  const container = document.getElementById('storySection');
-  container.innerHTML = '';
+    const container = document.getElementById('storySection');
+    container.innerHTML = '';
 
-  const start = (page - 1) * storiesPerPage;
-  const end   = start + storiesPerPage;
-  const paginatedStories = allStories.slice(start, end);
+    const start = (page - 1) * storiesPerPage;
+    const end   = start + storiesPerPage;
+    const paginatedStories = allStories.slice(start, end);
 
-  paginatedStories.forEach(story => {
-    /* ---------- wrapper ---------- */
-    const storyDiv = document.createElement('div');
-    storyDiv.classList.add('story');
+    paginatedStories.forEach(story => {
+      /* wrapper */
+      const storyDiv = document.createElement('div');
+      storyDiv.classList.add('story');
 
-    /* ---------- media preview ---------- */
-    const img = document.createElement('img');
-    img.src   = story.imageUrl;
-    img.alt   = 'story‑image';
-    img.onclick = () => location.href =
-      `readStory.html?id=${story._id}&speaker=Cherana`;
-    storyDiv.appendChild(img);
+      /* image */
+      const img = document.createElement('img');
+      img.src   = story.imageUrl;
+      img.alt   = 'story‑image';
+      img.loading = 'lazy';
+      img.onclick = () =>
+        location.href = `readStory.html?id=${story._id}&speaker=${speakerSlug}`;
+      storyDiv.appendChild(img);
 
-    /* ---------- details ---------- */
-    const details = document.createElement('div');
-    details.className = 'story-details';
+      /* details */
+      const details = document.createElement('div');
+      details.className = 'story-details';
 
-    /* TITLE — render as REAL HTML (Option 1) */
-    const h3 = document.createElement('h3');
-    h3.onclick = () =>
-      location.href = `readStory.html?id=${story._id}&speaker=Cherana`;
-    h3.innerHTML = story.title;          // ← real HTML, not escaped
-    details.appendChild(h3);
+      const h3 = document.createElement('h3');
+      h3.innerHTML = story.title;
+      h3.onclick = () =>
+        location.href = `readStory.html?id=${story._id}&speaker=${speakerSlug}`;
+      details.appendChild(h3);
 
-    /* INTRO */
-    const pIntro = document.createElement('p');
-    pIntro.innerHTML = story.intro || '';
-    details.appendChild(pIntro);
+      const pIntro = document.createElement('p');
+      pIntro.innerHTML = story.intro || '';
+      details.appendChild(pIntro);
 
-    /* ---------- like / dislike ---------- */
-    const likeWrap = document.createElement('div');
-    likeWrap.className = 'likes';
+      /* likes */
+      const likeWrap   = document.createElement('div');
+      likeWrap.className = 'likes';
+      const likeKey    = `like_${story._id}`;
+      const dislikeKey = `dislike_${story._id}`;
+      const isLiked    = localStorage.getItem(likeKey) === 'true';
+      const isDisliked = localStorage.getItem(dislikeKey) === 'true';
 
-    const likeKey    = `like_${story._id}`;
-    const dislikeKey = `dislike_${story._id}`;
-    const isLiked    = localStorage.getItem(likeKey) === 'true';
-    const isDisliked = localStorage.getItem(dislikeKey) === 'true';
+      // likeWrap.innerHTML = `
+      //   <i class="fas fa-thumbs-up ${isLiked ? 'liked' : ''}"
+      //      data-id="${story._id}"></i>
+      //   <span class="like-count"
+      //         id="like-count-${story._id}">${(story.likes ?? 0)}</span>
+      //
+      //   <i class="fas fa-thumbs-down ${isDisliked ? 'disliked' : ''}"
+      //      data-id="${story._id}"></i>
+      //   <span class="dislike-count"
+      //         id="dislike-count-${story._id}">${story.dislikes ?? 0}</span>
+      // `;
+      likeWrap.innerHTML =
+  '<i class="fas fa-thumbs-up ' + (isLiked ? 'liked' : '') + '" data-id="' + story._id + '"></i>' +
+  '<span class="like-count" id="like-count-' + story._id + '">' + (story.likes ?? 0) + '</span>' +
+  '<i class="fas fa-thumbs-down ' + (isDisliked ? 'disliked' : '') + '" data-id="' + story._id + '"></i>' +
+  '<span class="dislike-count" id="dislike-count-' + story._id + '">' + (story.dislikes ?? 0) + '</span>';
+      details.appendChild(likeWrap);
 
-    likeWrap.innerHTML = `
-      <i class="fas fa-thumbs-up ${isLiked ? 'liked' : ''}"   data-id="${story._id}"></i>
-      <span class="like-count"    id="like-count-${story._id}">${story.likes    ?? 0}</span>
-      <i class="fas fa-thumbs-down ${isDisliked ? 'disliked' : ''}" data-id="${story._id}"></i>
-      <span class="dislike-count" id="dislike-count-${story._id}">${story.dislikes ?? 0}</span>
-    `;
-    details.appendChild(likeWrap);
+      storyDiv.appendChild(details);
+      container.appendChild(storyDiv);
+    });
+  }
 
-    /* ---------- assemble ---------- */
-    storyDiv.appendChild(details);
-    container.appendChild(storyDiv);
-  });
-}
+//   function renderStories(page) {
+//   const container = document.getElementById('storySection');
+//   container.innerHTML = '';
+//
+//   /* ----- slice the master array ----- */
+//   const start = (page - 1) * storiesPerPage;
+//   const end   = start + storiesPerPage;
+//   const paginatedStories = allStories.slice(start, end);
+//
+//   /* ----- build each card ----- */
+//   paginatedStories.forEach(story => {
+//     /* wrapper */
+//     const storyDiv = document.createElement('div');
+//     storyDiv.classList.add('story');
+//
+//     /* media preview (image) */
+//     const img = document.createElement('img');
+//     img.src   = story.imageUrl;
+//     img.alt   = 'story‑image';
+//     img.onclick = () => location.href =
+//       `readStory.html?id=${story._id}&speaker=Cherana`;
+//     storyDiv.appendChild(img);
+//
+//     /* details wrapper */
+//     const details = document.createElement('div');
+//     details.className = 'story-details';
+//
+//     /* --- TITLE (render raw HTML so any <b>, <i> etc. appear) --- */
+//     const h3 = document.createElement('h3');
+//     h3.innerHTML = story.title;        // <- REAL html, not escaped
+//     h3.onclick   = () =>
+//       location.href = `readStory.html?id=${story._id}&speaker=Cherana`;
+//     details.appendChild(h3);
+//
+//     /* intro */
+//     const pIntro = document.createElement('p');
+//     pIntro.innerHTML = story.intro || '';
+//     details.appendChild(pIntro);
+//
+//     /* likes / dislikes */
+//     const likeWrap = document.createElement('div');
+//     likeWrap.className = 'likes';
+//
+//     const likeKey    = `like_${story._id}`;
+//     const dislikeKey = `dislike_${story._id}`;
+//     const isLiked    = localStorage.getItem(likeKey) === 'true';
+//     const isDisliked = localStorage.getItem(dislikeKey) === 'true';
+//
+//     likeWrap.innerHTML = `
+//       <i class="fas fa-thumbs-up ${isLiked ? 'liked' : ''}"
+//          data-id="${story._id}"></i>
+//       <span class="like-count"
+//             id="like-count-${story._id}">${story.likes ?? 0}</span>
+//
+//       <i class="fas fa-thumbs-down ${isDisliked ? 'disliked' : ''}"
+//          data-id="${story._id}"></i>
+//       <span class="dislike-count"
+//             id="dislike-count-${story._id}">${story.dislikes ?? 0}</span>
+//     `;
+//     details.appendChild(likeWrap);
+//
+//     /* combine + append */
+//     storyDiv.appendChild(details);
+//     container.appendChild(storyDiv);
+//   });
+// }
 
 
   function renderPagination() {
