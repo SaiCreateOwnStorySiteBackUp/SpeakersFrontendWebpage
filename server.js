@@ -12,9 +12,12 @@ app.use(express.static(path.join(__dirname, 'views')));
 app.use(express.static(path.join(__dirname, 'public')));
 // app.use(express.static(path.join(__dirname, 'public')));
 app.get('/sitemap.xml', (req, res) => {
+  console.log('Sitemap requested by', req.headers['user-agent']);
+  res.setHeader('Content-Disposition', 'inline');
   res.type('application/xml');
   res.sendFile(path.join(__dirname, 'public', 'sitemap.xml'));
 });
+
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
