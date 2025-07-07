@@ -77,6 +77,11 @@
   <input type="text"  id="mediaTitle" placeholder="Title" maxlength="120">
   <!-- Media URL -->
   <input type="text"  id="mediaUrl" placeholder="Image or YouTube URL" required>
+  <!-- New file‑upload row -->
+  <input type="file" id="mediaFile" accept="image/*,video/*">
+  <button type="button" id="uploadMediaBtn" style="display:none;" disabled>Click Upload</button>
+  <input type="hidden" id="cloudinaryUploadedUrl">
+  <small id="uploadInfo" style="display:none;color:#007b55;"></small>
   <!-- State dropdown (populated on load) -->
   <input  type="text"  id="submitStateInput" list="stateOptions" required placeholder="Select State">
   <!-- Locality -->
@@ -438,6 +443,185 @@ function showErr(msg){
 //     showErr("Network / server error.");
 //   }
 // }
+/* ---------- Cloudinary signed upload for Public Submission ---------- */
+/* ---------- Cloudinary signed upload for Public Submission ---------- */
+const MEDIA_MAX_MB = { image: 15, video: 20 };
+const mediaFile      = document.getElementById('mediaFile');
+const uploadBtn      = document.getElementById('uploadMediaBtn');
+const mediaUrlInput  = document.getElementById('mediaUrl');
+const uploadInfo     = document.getElementById('uploadInfo');
+const hiddenCloudUrl = document.getElementById('cloudinaryUploadedUrl');
+
+/* --- Mutually‑exclusive logic between File and URL --- */
+mediaFile.addEventListener('change', () => {
+  const fileChosen = mediaFile.files.length > 0;
+  if (fileChosen) {
+    mediaUrlInput.value    = '';
+    mediaUrlInput.disabled = true;           // ⛔ disable URL box
+    uploadBtn.style.display = 'inline-block';
+  } else {
+    mediaUrlInput.disabled = false;
+    uploadBtn.style.display = 'none';
+  }
+  toggleUploadBtn();
+});
+
+mediaUrlInput.addEventListener('input', () => {
+  const hasUrl = mediaUrlInput.value.trim().length > 0;
+  if (hasUrl) {
+    mediaFile.value       = '';
+    mediaFile.disabled    = true;            // ⛔ disable file picker
+    hiddenCloudUrl.value  = '';              // clear hidden URL
+    uploadBtn.style.display = 'none';
+  } else {
+    mediaFile.disabled = false;
+  }
+  toggleUploadBtn();
+});
+
+/* run once so initial state is correct */
+toggleUploadBtn();
+
+
+/* ——— NEW: helper to see if all required fields are filled ——— */
+function uploadReady () {
+  const titleFilled = !!document.getElementById('mediaTitle').value.trim();
+  const stateFilled = !!document.getElementById('submitStateInput').value.trim();
+  const locFilled   = !!document.getElementById('localityInput').value.trim();
+
+  const fileChosen  = mediaFile.files.length > 0;
+  const urlProvided = !!mediaUrlInput.value.trim();
+  const cloudUrl    = !!document.getElementById('cloudinaryUploadedUrl').value.trim();
+
+  return {
+    titleFilled,
+    stateFilled,
+    locFilled,
+    fileChosen,
+    urlProvided,
+    cloudUrl,
+    readyToSubmit:
+      titleFilled && stateFilled && locFilled && (fileChosen || urlProvided || cloudUrl)
+  };
+}
+
+
+/* Toggle visibility + disabled state */
+function toggleUploadBtn () {
+  const r = uploadReady();
+
+  /* ── 1.  Upload‑button visibility & enabled state ───────── */
+  if (!r.fileChosen) {
+    uploadBtn.style.display = 'none';          // hide if no file
+    uploadBtn.disabled = true;
+  } else {
+    uploadBtn.style.display = 'inline-block';  // show when file picked
+    uploadBtn.disabled = !(r.titleFilled && r.stateFilled && r.locFilled);
+  }
+
+  /* ── 2.  Disable Submit until ALL required pieces ready ── */
+  document.getElementById('submitMediaBtn').disabled = !r.readyToSubmit;
+}
+
+/* ——— NEW: enable/disable Upload button whenever a field changes ——— */
+['mediaTitle', 'submitStateInput', 'localityInput']
+  .forEach(id => document.getElementById(id).addEventListener('input', toggleUploadBtn));
+
+
+
+// mediaFile.addEventListener('change', () => {
+//   if (mediaFile.files.length > 0) {
+//     mediaUrlInput.value = '';
+//     document.getElementById('cloudinaryUploadedUrl').value = ''; // reset hidden URL
+//   }
+//   toggleUploadBtn();           // re‑evaluate after file pick
+// });
+//
+// mediaUrlInput.addEventListener('input', () => {
+//   if (mediaUrlInput.value.trim()) {
+//     mediaFile.value = '';      // clear chosen file
+//     document.getElementById('cloudinaryUploadedUrl').value = '';
+//   }
+//   toggleUploadBtn();           // re‑evaluate after typing URL
+// });
+
+
+
+/* fetch backend signature then upload */
+async function uploadPublicMedia(file) {
+  const type = file.type.startsWith('video') ? 'video' : 'image';
+  const max  = MEDIA_MAX_MB[type] * 1024 * 1024;
+
+  if (file.size > max) {
+    alert(`File exceeds ${MEDIA_MAX_MB[type]} MB (${type}) limit.`);
+    return null;
+  }
+
+  const sigRes = await fetch(`${window.BACKEND_BASE_URL}/cloudinary/public-signature?type=${type}`);
+  const sig    = await sigRes.json();
+
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('api_key',      sig.apiKey);
+  fd.append('timestamp',    sig.timestamp);
+  fd.append('signature',    sig.signature);
+  fd.append('upload_preset',sig.uploadPreset);
+  fd.append('folder',       sig.folder);
+
+  const url = `https://api.cloudinary.com/v1_1/${sig.cloudName}/${type}/upload`;
+  const up  = await fetch(url, { method:'POST', body: fd });
+  if (!up.ok) {
+  const errJson = await up.json();          // <— ADD THIS
+  console.error('Cloudinary error:', errJson);
+  throw new Error(errJson.error?.message || 'Upload failed');
+}
+  return up.json();      // → { secure_url, ... }
+}
+
+/* click handler */
+uploadBtn.addEventListener('click', async () => {
+  const { titleFilled, stateFilled, locFilled, fileChosen } = uploadReady();
+  if (!(titleFilled && stateFilled && locFilled && fileChosen)) {
+    let missing = [];
+    if (!titleFilled)   missing.push('Title');
+    if (!stateFilled)   missing.push('State');
+    if (!locFilled)     missing.push('Locality');
+    if (!fileChosen)    missing.push('File');
+    return alert('Please provide: ' + missing.join(', '));
+  }
+
+  const file = mediaFile.files[0];
+  if (!file) return;
+
+  uploadBtn.disabled = true;
+  uploadInfo.textContent = 'Uploading…';
+  uploadInfo.style.display = 'inline';
+
+  try {
+    const data = await uploadPublicMedia(file);
+    if (data && data.secure_url) {
+      document.getElementById('cloudinaryUploadedUrl').value = data.secure_url;
+      mediaFile.value = '';                       // clear raw file
+      uploadInfo.textContent = 'Uploaded ✔';
+
+      uploadBtn.style.display = 'none';
+      uploadBtn.disabled = true;
+      mediaFile.disabled = false;
+
+      toggleUploadBtn(); // re-evaluate submit readiness
+    } else {
+      throw new Error('Upload failed');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Cloudinary upload failed.');
+    uploadInfo.style.display = 'none';
+    toggleUploadBtn();
+  } finally {
+    uploadBtn.disabled = false;
+  }
+});
+
 async function publicSubmit () {
   const btn = document.getElementById("submitMediaBtn");
   btn.disabled = true; // disable IMMEDIATELY on click to avoid multiple submits
@@ -448,9 +632,10 @@ async function publicSubmit () {
   const url      = document.getElementById("mediaUrl").value.trim();
   const state    = document.getElementById("submitStateInput").value.trim();
   const locality = document.getElementById("localityInput").value.trim();
+  const uploaded = document.getElementById("cloudinaryUploadedUrl").value.trim();
 
   /* ----- REQUIRED‑FIELD CHECK ----------------------------------- */
-  if (!title || !url || !state || !locality) {
+  if (!title ||(!url && !uploaded) || !state || !locality) {
     btn.disabled = false; // re-enable in case of error
     return showErr("Title, URL, State and Locality are required.");
   }
@@ -478,17 +663,19 @@ async function publicSubmit () {
   }
 
   /* ----- BUILD BACKEND PAYLOAD ---------------------------------- */
-  const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
-  const payload   = {
+  const finalUrl = uploaded || url;
+  const isYouTube = finalUrl.includes("youtube.com") || finalUrl.includes("youtu.be");
+
+  const payload = {
     name,
     mobile,
-    email       : "mallamuruvenkat@gmail.com",   // fixed owner e‑mail
+    email       : "mallamuruvenkat@gmail.com",
     title,
     state,
     locality,
     description : "",
-    youtubeLink : isYouTube ? url : "",
-    imageUrl    : isYouTube ? ""  : url
+    youtubeLink : isYouTube ? finalUrl : "",
+    imageUrl    : isYouTube ? ""        : finalUrl
   };
 
   /* ----- SEND TO BACKEND --------------------------------------- */
@@ -502,19 +689,39 @@ async function publicSubmit () {
     if (res.success) {
       document.getElementById("subFeedback").style.display = "block";
 
-      // ✅ Clear input fields after success
+      // Reset all fields
       document.getElementById("pubName").value = "";
       document.getElementById("pubMobile").value = "";
       document.getElementById("mediaTitle").value = "";
       document.getElementById("mediaUrl").value = "";
       document.getElementById("submitStateInput").value = "";
       document.getElementById("localityInput").value = "";
-      /* nice feedback + lock button to avoid double‑submit */
-      // document.getElementById("subFeedback").style.display = "block";
-      // document.getElementById("submitMediaBtn").disabled   = true;
+      document.getElementById("cloudinaryUploadedUrl").value = "";
+      mediaFile.value = "";
+      uploadInfo.textContent = "Uploaded ✔";
+
+      // Disable submit
+      document.getElementById("submitMediaBtn").disabled = true;
+
+      // Reset UI after 10 seconds
+      setTimeout(() => {
+        // Re-enable all fields
+        document.getElementById("mediaUrl").disabled = false;
+        document.getElementById("mediaFile").disabled = false;
+        document.getElementById("submitMediaBtn").disabled = false;
+
+        // Clear messages
+        uploadInfo.style.display = "none";
+        uploadInfo.textContent = "";
+        document.getElementById("subFeedback").style.display = "none";
+
+        // Hide Upload button
+        uploadBtn.style.display = 'none';
+        toggleUploadBtn();  // Recalculate state
+      }, 5000);
     } else {
       showErr(res.message || "Server rejected the submission.");
-      btn.disabled = false; // re-enable if server rejected
+      btn.disabled = false;
     }
   } catch (err) {
     console.error(err);
@@ -649,6 +856,7 @@ async function publicSubmit () {
         console.error("Failed to load stories:", err);
       }
     };
+    // toggleUploadBtn();
   </script>
 </body>
 </html>
