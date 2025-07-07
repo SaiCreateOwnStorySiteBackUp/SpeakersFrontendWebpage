@@ -10,6 +10,12 @@ app.use(express.static(path.join(__dirname, 'views')));
 
 // Public assets: css, js, images, uploads
 app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
+app.get('/sitemap.xml', (req, res) => {
+  res.type('application/xml');
+  res.sendFile(path.join(__dirname, 'public', 'sitemap.xml'));
+});
+
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
 app.use('/cssStyles', express.static(path.join(__dirname, 'cssStyles')));
