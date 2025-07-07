@@ -126,7 +126,7 @@
 </script> -->
 <script src="/js/config.js"></script>
 <script src="/js/api.js"></script>
-<script>
+<!-- <script>
     // const backendUrl = window.BACKEND_BASE_URL;
 
   async function loadVisitorCount() {
@@ -162,7 +162,59 @@
       body: JSON.stringify({ speaker })
     }).catch(err => console.error('Speaker click tracking failed:', err));
   }
-  </script>
+  </script> -->
+  <script>
+async function loadVisitorCount () {
+
+  /* ── 1. get user position (permission‑based) ─────────────────── */
+  let coords = null;
+  try {
+    coords = await new Promise((res, rej) =>
+      navigator.geolocation.getCurrentPosition(
+        p => res({
+          lat: +p.coords.latitude .toFixed(8),   // 8 dp
+          lon: +p.coords.longitude.toFixed(8)
+        }),
+        err => res(null),                        // ignore denial
+        { enableHighAccuracy:true, timeout:5000 }
+      ));
+  } catch { /* ignore */ }
+
+  /* ── 2. track visit ───────────────────────────────────────────── */
+  try {
+    await fetch(`${window.BACKEND_BASE_URL}/api/visitor/track`, {
+      method : 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body   : JSON.stringify({ ...coords })     // {lat,lon} or {}
+    });
+  } catch (e) {
+    console.warn('Track failed:', e);
+  }
+
+  /* ── 3. update counter (unchanged) ────────────────────────────── */
+  try {
+    const r   = await fetch(`${window.BACKEND_BASE_URL}/api/visitor/count`);
+    const { count = 0 } = await r.json();
+    document.getElementById('visitor-count').textContent = count;
+  } catch (e){
+    console.warn('Cnt fetch failed:',e);
+    document.getElementById('visitor-count').textContent = '0';
+  }
+}
+
+/* first paint */
+loadVisitorCount();
+
+/* speaker clicks – unchanged */
+function trackClick(speaker){
+  fetch(`${window.BACKEND_BASE_URL}/api/visitor/track-click`,{
+    method : 'POST',
+    headers: { 'Content-Type':'application/json' },
+    body   : JSON.stringify({ speaker })
+  }).catch(e=>console.error('Click track failed:',e));
+}
+</script>
+
 
 </body>
 </html>
