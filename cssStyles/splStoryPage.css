@@ -241,7 +241,8 @@ footer a:hover {
 .media-card iframe {
   width: 100%;
   max-width: 500px;
-  height: 280px; /* desktop height */
+  aspect-ratio: 16 / 9; /* maintains proper video dimensions */
+  height: auto; /* let the height scale automatically */
 }
 
 @media (max-width: 768px) {

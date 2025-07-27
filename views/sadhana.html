@@ -30,10 +30,15 @@
 <!-- Page Content -->
 <div class="container">
   <!-- Speaker Info -->
-  <div class="speaker-info">
+  <!-- <div class="speaker-info">
     <img src="https://res.cloudinary.com/createownstory/image/upload/v1748685713/GPAQ7401_ade4vp.jpg" alt="Sadhana">
     <h2>Sadhana</h2>
     <p>Specializes in Kids Stories. Brings imagination to life through colorful characters and fun adventures.</p>
+  </div> -->
+  <div id="speakerInfo" class="speaker-info">
+    <!-- <img src="https://res.cloudinary.com/createownstory/image/upload/v1748703169/IMG_5632_e3jz2v.jpg" alt="Cherana">
+    <h2>Cherana</h2>
+    <p>Specializes in Kids Stories. Brings imagination to life through colorful characters and fun adventures.</p> -->
   </div>
 
   <!-- Stories Section -->
@@ -49,39 +54,100 @@
 </footer>
 <script src="/js/config.js"></script>
 <script src="/js/api.js"></script>
-
+<script src="/js/speakerDynamicMeta.js"></script>
 <script>
+// console.log("➡️ initSpeakerPage starting…");
+// initSpeakerPage("cherana", "cherana@gmail.com");
+
+// const slug = window.location.pathname.split("/").pop().replace(".html", "").toLowerCase();
+//   initSpeakerPage(slug);
+//   const slug = window.location.pathname.split("/").pop().replace(".html", "").toLowerCase();
+// const speakerRes = await fetchFromAPI(`/users/slug/${slug}`);
 document.addEventListener('DOMContentLoaded', async () => {
+  // console.log("➡️ initSpeakerPage starting…");
+  const slug = window.location.pathname.split("/").pop().replace(".html", "").toLowerCase();
+  let email = "";
+  let speakerName = "Speaker"; // fallback
   const storiesPerPage = 5;
   let currentPage = 1;
   let allStories = [];
 
-  const email = "medaramitlasadhana.89@gmail.com";
-  let speakerName = "Speaker"; // fallback
+// document.addEventListener('DOMContentLoaded', () => {
+
+
+  // const email = "medaramitlasadhana.89@gmail.com";
+
 
   // ✅ Get speaker name using email (match your backend route `/users/email/:email`)
+  // try {
+  //   const speakerRes = await fetchFromAPI(`/users/email/${encodeURIComponent(email)}`);
+  //   if (speakerRes.success && speakerRes.user && speakerRes.user.name) {
+  //     speakerName = speakerRes.user.name;
+  //   }
+  // } catch (err) {
+  //   console.warn("Could not fetch speaker name:", err);
+  // }
+
   try {
-    const speakerRes = await fetchFromAPI(`/users/email/${encodeURIComponent(email)}`);
-    if (speakerRes.success && speakerRes.user && speakerRes.user.name) {
-      speakerName = speakerRes.user.name;
-    }
+    const speaker = await initSpeakerPage(slug); // ✅ single call
+    email = speaker.email;
+    speakerName = speaker.name || "Speaker";
   } catch (err) {
-    console.warn("Could not fetch speaker name:", err);
+    console.warn("❌ Could not fetch speaker info:", err);
+    return;
   }
 
-  // ✅ Fetch stories for the given email
+  if (!email) {
+  console.warn("⚠️ No email found. Cannot fetch stories.");
+  return;
+}
+
+
+  //
+  // // ✅ Fetch stories for the given email
+  // try {
+  //   allStories = await fetchFromAPI(`/stories?email=${encodeURIComponent(email)}`);
+  //   if (!Array.isArray(allStories) || allStories.length === 0) {
+  //     document.getElementById('storySection').innerHTML = '<p>No stories posted yet.</p>';
+  //     return;
+  //   }
+  //   renderStories(currentPage);
+  //   renderPagination();
+  // } catch (err) {
+  //   console.error('Failed to load stories:', err);
+  //   document.getElementById('storySection').innerHTML = '<p>Failed to load stories. Please try again later.</p>';
+  // }
+
   try {
-    allStories = await fetchFromAPI(`/stories?email=${encodeURIComponent(email)}`);
-    if (!Array.isArray(allStories) || allStories.length === 0) {
+    console.log("🔍 Fetching stories for email:", email);
+    const storyRes = await fetchFromAPI(`/stories?email=${encodeURIComponent(email)}`);
+    if (!Array.isArray(storyRes) || storyRes.length === 0) {
       document.getElementById('storySection').innerHTML = '<p>No stories posted yet.</p>';
       return;
     }
-    renderStories(currentPage);
-    renderPagination();
+
+    allStories = storyRes;
+    renderStories(currentPage, allStories, storiesPerPage);
+    renderPagination(currentPage, allStories.length, storiesPerPage);
   } catch (err) {
-    console.error('Failed to load stories:', err);
+    console.error('❌ Failed to load stories:', err);
     document.getElementById('storySection').innerHTML = '<p>Failed to load stories. Please try again later.</p>';
   }
+
+
+    /* ───────────────────────────────────
+       0.  SPEAKER NAME  →  slug
+    ─────────────────────────────────── */
+    /** Derive it from the page header (or hard‑code a fallback) */
+    // const speakerName = document
+    //       .querySelector('.speaker-info h2')?.textContent.trim() || 'Speaker';
+    //
+    // /** Pre‑encoded once so we don’t call encodeURIComponent repeatedly */
+    // const speakerSlug = encodeURIComponent(speakerName);
+
+    /* ───────────────────────────────────
+       1.  FETCH + RENDER
+    ─────────────────────────────────── */
 
   function renderStories(page) {
     const container = document.getElementById('storySection');

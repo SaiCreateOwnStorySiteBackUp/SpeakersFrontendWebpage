@@ -23,10 +23,13 @@
 <!-- Page Content -->
 <div class="container">
   <!-- Speaker Info -->
-  <div class="speaker-info">
-    <img src="https://res.cloudinary.com/createownstory/image/upload/v1748686301/20210316_092052_l81ih1.jpg" alt="Cherana">
+  <div class="speaker-info" id="speakerProfile">
+    <!-- <img src="https://res.cloudinary.com/createownstory/image/upload/v1748686301/20210316_092052_l81ih1.jpg" alt="Cherana">
     <h2>Seshu</h2>
-    <p>Specializes in Kids Stories. Brings imagination to life through colorful characters and fun adventures.</p>
+    <p>Specializes in Kids Stories. Brings imagination to life through colorful characters and fun adventures.</p> -->
+    <img id="profileImage" src="" alt="Profile Photo"> <!-- // NEW -->
+    <h2 id="speakerName">Seshu</h2> <!-- // NEW -->
+    <p id="speakerIntro">Loading intro...</p> <!-- // NEW -->
   </div>
   <!-- Community Stories Link -->
   <div class="community-link">
@@ -58,15 +61,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   const email = "mallamuruvenkat@gmail.com";
   let speakerName = "Speaker"; // fallback
 
-  // ✅ Get speaker name using email (match your backend route `/users/email/:email`)
+  // ✅ NEW: Fetch speaker profile info
   try {
-    const speakerRes = await fetchFromAPI(`/users/email/${encodeURIComponent(email)}`);
-    if (speakerRes.success && speakerRes.user && speakerRes.user.name) {
-      speakerName = speakerRes.user.name;
+  const profileRes = await fetchFromAPI(`/users/splusers/email/${encodeURIComponent(email)}`);
+  if (profileRes.success && profileRes.user) {
+    const user = profileRes.user;
+
+    const profileImage = document.getElementById('profileImage');
+    if (user.profileImage) {
+      profileImage.src = user.profileImage;
+    } else {
+      profileImage.src = "/images/default_profile.png"; // fallback image
     }
-  } catch (err) {
-    console.warn("Could not fetch speaker name:", err);
+
+    document.getElementById('speakerName').textContent = user.name || speakerName;
+    document.getElementById('speakerIntro').textContent = user.intro || "No intro added yet.";
   }
+} catch (err) {
+  console.warn("Could not load speaker profile:", err);
+}
 
   // ✅ Fetch stories for the given email
   try {

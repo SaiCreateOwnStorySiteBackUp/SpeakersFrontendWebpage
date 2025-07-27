@@ -6,21 +6,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="/cssStyles/contact.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a3b1be9998.js" crossorigin="anonymous"></script>
 </head>
 <body>
+  <!-- <script src="/javaScript/footer.js"></script> -->
 <div class="page-border">
   <nav>
-    <div><strong style="color:white;">Free Voices</strong></div>
-    <div>
+    <div class="logo-section">
+    <img id="logoImage" alt="Admin" class="logo">
+    <strong id="websiteName"></strong>
+    </div>
+    <!-- <div>
       <a href="index.html">Home</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
-    </div>
+      <a href="termsConditions.html">Terms & Conditions</a>
+    </div> -->
+    <div id="dynamic-nav"></div>
   </nav>
 
   <div class="container">
-    <div class="contact-info">
-      <h2>Contact Us</h2>
+    <div class="contact-info" id="contactInfo">
+      <!-- <h2>Contact Us</h2>
       <p>
         Address: Sri Ram Nagar Colony, Gangaram, Chandanagar, Hyderabad, Pincode: 500050
       </p>
@@ -29,7 +36,13 @@
       </p>
       <p>
         Email: <a href="mailto:seshusai76@gmail.com">info@FreeVoices.com</a>
-      </p>
+      </p> -->
+      <h2 id="contactHeader">Contact Us</h2>
+      <p id="contactAddress">Address: ...</p>
+      <p id="contactMobile">Mobile: ...</p>
+      <p id="contactEmail">Email: ...</p>
+      <!-- <p id="contactTriggerdEmail" hidden>TriggerdEmail: ...</p> -->
+      <p id="contactMessage">Join Us: ...</p>
 
       <!-- <div class="contact-form">
         <form action="mailto:seshusai76@gmail.com" method="post" enctype="text/plain">
@@ -64,23 +77,72 @@
         </form>
         <p id="responseMessage" style="color: green; font-weight: bold;"></p>
       </div>
-
-      <div class="social-icons">
-        <a href="https://api.whatsapp.com/send?phone=919700550304" target="_blank"><i class="fab fa-whatsapp"></i></a>
-        <a href="mailto:seshusai76@gmail.com" target="_blank"><i class="fas fa-envelope"></i></a>
-        <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
-      </div>
     </div>
   </div>
 </div>
 <!-- Footer section -->
-  <footer>
-    <p>© 2025 Free Voices | All Rights Reserved</p>
-  </footer>
-  <!-- <script src="/js/footer.js"></script> -->
+<footer>
+  <div id="socialIcons" class="social-icons"></div>
+    <div id="copyrightText"></div>
+</footer>
+
   <script src="/js/config.js"></script>
   <script src="/js/api.js"></script>
+  <script src="/javaScript/loadHeader.js"></script>
+  <script src="/javaScript/footer.js"></script>
   <script>
+  loadHeaderMenu();
+  // document.addEventListener("DOMContentLoaded", footer);
+  async function loadLogoContent() {
+  try {
+    const res = await fetch(`${BACKEND_BASE_URL}/editIndexPages/home`);
+    if (!res.ok) throw new Error("Network error");
+    const data = await res.json();
+
+    const logoImg = document.getElementById("logoImage");
+    if (data.logoUrl) {
+      logoImg.src = data.logoUrl;
+
+      if (data.logoShape === "circle") {
+        logoImg.classList.add("circle");
+      } else {
+        logoImg.classList.remove("circle");
+      }
+    }
+
+    if (data.homeWebsitename) {
+      document.getElementById("websiteName").textContent = data.homeWebsitename;
+    }
+  } catch (err) {
+    console.error("Error loading home data:", err);
+  }
+  }
+
+  window.addEventListener("DOMContentLoaded", loadLogoContent)
+  async function loadContactInfo() {
+    try {
+      const res = await fetch(`${BACKEND_BASE_URL}/editIndexPages/contact`);
+      const data = await res.json();
+
+      if (res.ok) {
+        document.getElementById("contactHeader").textContent = data.contactHeader || "Contact Us";
+        document.getElementById("contactAddress").textContent = `Address: ${data.contactAddress}`;
+        document.getElementById("contactMobile").textContent = `Mobile: ${data.contactMobile}`;
+        // document.getElementById("contactEmail").innerHTML = `Email: <a href="mailto:${data.contactEmail}">${data.contactEmail}</a>`;
+        document.getElementById("contactEmail").innerHTML =`Email: <a href="mailto:${data.contactTriggeredEmail}">${data.contactEmail}</a>`;
+        // ✅ Save hidden email (for internal use, bots, logging, etc.)
+      // document.getElementById("hiddenTriggerdEmail").textContent = `TriggerdEmail: ${data.contactTriggeredEmail}`;
+      document.getElementById("contactMessage").textContent = `Join Us: ${data.contactMessage}`;
+      } else {
+        console.error("Failed to fetch contact info", data.error);
+      }
+    } catch (err) {
+      console.error("Error loading contact info:", err);
+    }
+  }
+
+  loadContactInfo();
+
   document.getElementById('contactForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 

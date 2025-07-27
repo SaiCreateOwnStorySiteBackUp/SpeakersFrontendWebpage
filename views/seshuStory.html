@@ -275,7 +275,6 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   await loadStates();        // build caches + first <datalist>
   hookSearchInputs();        // attach listeners
 });
-
     function createMediaCard(title, url, state, locality, createdAt) {
       const card = document.createElement("div");
       card.className = "media-card";
@@ -326,7 +325,8 @@ window.addEventListener('DOMContentLoaded', async ()=>{
         </div>
         <div class="meta">${title}<br>${locality}, ${state}<br>${dateStr}</div>
       `;
-      } else {
+      }
+       else {
         card.innerHTML = `
           <img src="${url}" alt="${title}" />
           <div class="meta">${title}<br>${locality}, ${state}<br>${dateStr}</div>

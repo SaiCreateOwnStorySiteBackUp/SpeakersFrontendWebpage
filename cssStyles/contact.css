@@ -61,7 +61,28 @@ nav a:hover {
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
 }
+.dashboard-container {
+    max-width: 700px;
+    margin-left: 25px;   /* Push from left */
+    margin-top: 100px;
+    margin-right: auto;
+    text-align: left;
+  }
 
+  .dashboard-container h1,
+  .dashboard-container label,
+  .dashboard-container input,
+  .dashboard-container textarea {
+    display: block;
+    width: 100%;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+/* .terms-info{
+text-align: left;
+} */
 .contact-info h2 {
   text-align: center;
   margin-bottom: 30px;
@@ -101,55 +122,6 @@ nav a:hover {
   background-color: #0056b3;
 }
 
-/* ===== Social Icons ===== */
-.social-icons {
-  text-align: center;
-  margin-top: 30px;
-}
-
-.social-icons a {
-  margin: 0 clamp(8px, 3vw, 15px);
-  font-size: clamp(20px, 3vw, 28px);
-  color: #007bff;
-  text-decoration: none;
-}
-
-.social-icons a:hover {
-  color: #0056b3;
-}
-
-/* ===== Footer ===== */
-/* footer {
-  background-color: #222;
-  color: white;
-  text-align: center;
-  padding: clamp(8px, 1vw, 12px);
-  margin: 0 4px;
-  box-sizing: border-box;
-  border-radius: 8px 8px 0 0;
-  font-size: clamp(0.85rem, 1.8vw, 1rem);
-  opacity: 0;
-  display: none;
-} */
-/* footer {
-  background-color: #222;
-  color: white;
-  text-align: center;
-  padding: clamp(8px, 1vw, 12px);
-  margin: 0 4px;
-  box-sizing: border-box;
-  border-radius: 8px 8px 0 0;
-  font-size: clamp(0.85rem, 1.8vw, 1rem);
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  opacity: 0;
-  transform: translateY(100%);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  z-index: 1000;
-} */
-
 footer {
   background-color: #222;
   color: white;
@@ -165,15 +137,69 @@ footer {
   transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
+ img.logo {
+  height: 50px;
+  width: 50px;
+  object-fit: cover;
+}
+
+/* Circular style (optional if saved that way) */
+ img.logo.circle {
+  border-radius: 50%;
+  border: 3px solid #444; /* optional for thicker circle */
+}
+.logo-section {
+  display: flex;
+  align-items: center;        /* vertical alignment */
+  justify-content: center;    /* horizontal center */
+  /* flex-direction: column;     /* stack logo and name vertically */ */
+  flex-direction: row;
+  margin-top: -10px;          /* move a bit upward */
+}
+#websiteName {
+  color: white;
+  font-size: 16px;
+  text-align: center;
+  margin-top: -4px;           /* move name slightly up */
+   margin-left: 10px;
+}
+
 footer.footer-visible {
   transform: translateY(0);
   opacity: 1;
 }
+/* footer {
+  background-color: #222;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+} */
 
+footer a {
+  margin: 0 0.5rem;
+  color: white;
+  font-size: 1.5em;
+}
 
+footer a:hover {
+  color: #00bcd4;
+}
+.social-icons a {
+margin: 0 10px;
+color: white;
+font-size: 20px;
+text-decoration: none;
+}
 
+.social-icons a:hover {
+color: #ffcc00;
+}
 
-
+#copyrightText p {
+margin-top: 10px;
+font-size: 14px;
+color: #ccc;
+}
 /* ========== Responsive Adjustments ========== */
 
 /* Phones */

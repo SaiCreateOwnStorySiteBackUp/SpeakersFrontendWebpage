@@ -57,10 +57,10 @@
 <!-- Page Content -->
 <div class="container">
   <!-- Speaker Info -->
-  <div class="speaker-info">
-    <img src="https://res.cloudinary.com/createownstory/image/upload/v1748703169/IMG_5632_e3jz2v.jpg" alt="Cherana">
+  <div id="speakerInfo" class="speaker-info">
+    <!-- <img src="https://res.cloudinary.com/createownstory/image/upload/v1748703169/IMG_5632_e3jz2v.jpg" alt="Cherana">
     <h2>Cherana</h2>
-    <p>Specializes in Kids Stories. Brings imagination to life through colorful characters and fun adventures.</p>
+    <p>Specializes in Kids Stories. Brings imagination to life through colorful characters and fun adventures.</p> -->
   </div>
 
   <!-- Stories Section -->
@@ -78,7 +78,107 @@
 </footer>
 <script src="/js/config.js"></script>
 <script src="/js/api.js"></script>
+<script src="/js/speakerDynamicMeta.js"></script>
 <script>
+console.log("➡️ initSpeakerPage starting…");
+// initSpeakerPage("cherana", "cherana@gmail.com");
+
+const slug = window.location.pathname.split("/").pop().replace(".html", "").toLowerCase();
+  initSpeakerPage(slug);
+
+
+// forceRefreshSpeakerInfo("cherana", "cherana@gmail.com");
+// fetchFromAPI(`/users/email/cherana@gmail.com`)
+//   .then(user => {
+//     const container = document.getElementById("speakerInfo");
+//     container.innerHTML = `
+//       <img src="${user.profileImage || '/images/default.jpg'}" alt="${user.name || 'Speaker'}">
+//       <h2>${user.name || 'Cherana'}</h2>
+//       <p>${user.intro || 'Inspiring speaker with unique stories.'}</p>
+//     `;
+//   })
+//   .catch(err => {
+//     console.error("Failed to load speaker info:", err);
+//   });
+
+
+  // const cacheKey = "speakerInfo_cherana";
+  // const cacheTTL = 3600 * 1000; // 1 hour
+  //
+  // const cached = JSON.parse(sessionStorage.getItem(cacheKey) || "{}");
+  // const now = Date.now();
+  //
+  // if (cached.data && (now - cached.timestamp < cacheTTL)) {
+  //   renderSpeakerInfo(cached.data);
+  // } else {
+  //   fetchFromAPI(`/users/email/cherana@gmail.com`)
+  //     .then(user => {
+  //       sessionStorage.setItem(cacheKey, JSON.stringify({
+  //         data: user,
+  //         timestamp: now
+  //       }));
+  //       renderSpeakerInfo(user);
+  //     })
+  //     .catch(err => {
+  //       console.error("Failed to load speaker info:", err);
+  //     });
+  // }
+
+  // function renderSpeakerInfo(user) {
+  //   const container = document.getElementById("speakerInfo");
+  //   container.innerHTML = `
+  //     <img src="${user.profileImage || '/images/default.jpg'}" alt="${user.name}">
+  //     <h2>${user.name}</h2>
+  //     <p>${user.intro || ''}</p>
+  //   `;
+  // }
+
+  // function renderSpeakerInfo(user) {
+  //   const container = document.getElementById("speakerInfo");
+  //   const profileImage = user.profileImage?.startsWith("http")
+  //     ? user.profileImage
+  //     : "/images/default.jpg";
+  //   const name = user.name || "Speaker";
+  //   const intro = user.intro || "Inspiring speaker with unique stories.";
+  //
+  //   container.innerHTML = `
+  //     <img src="${profileImage}" alt="${name}">
+  //     <h2>${name}</h2>
+  //     <p>${intro}</p>
+  //   `;
+  // }
+
+
+  // fetchFromAPI('/meta/cherana')
+  // .then(meta => {
+  //   document.title = meta.title;
+  //
+  //   const head = document.getElementsByTagName('head')[0];
+  //   const setMeta = (name, content) => {
+  //     let tag = document.querySelector(`meta[name="${name}"]`);
+  //     if (!tag) {
+  //       tag = document.createElement("meta");
+  //       tag.setAttribute("name", name);
+  //       head.appendChild(tag);
+  //     }
+  //     tag.setAttribute("content", content);
+  //   };
+
+  //   setMeta("description", meta.description);
+  //   setMeta("title", meta.title);
+  //
+  //   document.querySelector('meta[property="og:title"]').setAttribute("content", meta.title);
+  //   document.querySelector('meta[property="og:description"]').setAttribute("content", meta.description);
+  //   document.querySelector('meta[property="og:image"]').setAttribute("content", meta.image);
+  //   document.querySelector('meta[property="og:url"]').setAttribute("content", meta.url);
+  //
+  //   document.querySelector('meta[name="twitter:title"]').setAttribute("content", meta.title);
+  //   document.querySelector('meta[name="twitter:description"]').setAttribute("content", meta.description);
+  //   document.querySelector('meta[name="twitter:image"]').setAttribute("content", meta.image);
+  //   document.querySelector('meta[name="twitter:url"]').setAttribute("content", meta.url);
+  // });
+
+// **************************************************************************
 document.addEventListener('DOMContentLoaded', () => {
   /* ───────────────────────────────────
      0.  SPEAKER NAME  →  slug

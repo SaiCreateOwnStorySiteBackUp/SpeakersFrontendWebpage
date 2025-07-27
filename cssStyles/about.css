@@ -16,7 +16,17 @@ body {
   box-sizing: border-box;
   padding: clamp(0.5rem, 2vw, 1.5rem);
 }
-
+.default-logo {
+  border-radius: 0%;
+}
+.circle-logo {
+  width: 250px;       /* or any square size */
+  height:250px;
+  object-fit: cover;  /* crop the image to fit perfectly */
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto;
+}
 /* ===== Navigation ===== */
 nav {
   background-color: #222;
@@ -59,11 +69,11 @@ nav a:hover {
   text-align: center;
 }
 
-.admin-info img {
+/* .admin-info img {
   width: clamp(100px, 25vw, 150px);
   border-radius: 50%;
   margin-bottom: 20px;
-}
+} */
 
 .admin-info h2 {
   margin: 10px 0;
@@ -75,6 +85,33 @@ nav a:hover {
   line-height: 1.6;
   color: #333;
   padding: 0 1rem;
+}
+
+img.logo {
+ height: 50px;
+ width: 50px;
+ object-fit: cover;
+}
+
+/* Circular style (optional if saved that way) */
+img.logo.circle {
+ border-radius: 50%;
+ border: 3px solid #444; /* optional for thicker circle */
+}
+.logo-section {
+ display: flex;
+ align-items: center;        /* vertical alignment */
+ justify-content: center;    /* horizontal center */
+ /* flex-direction: column;     /* stack logo and name vertically */ */
+ flex-direction: row;
+ margin-top: -10px;          /* move a bit upward */
+}
+#websiteName {
+ color: white;
+ font-size: 16px;
+ text-align: center;
+ margin-top: -4px;           /* move name slightly up */
+  margin-left: 10px;
 }
 
 /* ===== Footer ===== */
@@ -94,6 +131,31 @@ footer {
   border-bottom: 4px solid transparent;
   border-radius: 8px 8px 0 0;
   font-size: clamp(0.85rem, 1.8vw, 1rem);
+}
+footer a {
+  margin: 0 0.5rem;
+  color: white;
+  font-size: 1.5em;
+}
+
+footer a:hover {
+  color: #00bcd4;
+}
+.social-icons a {
+margin: 0 10px;
+color: white;
+font-size: 20px;
+text-decoration: none;
+}
+
+.social-icons a:hover {
+color: #ffcc00;
+}
+
+#copyrightText p {
+margin-top: 10px;
+font-size: 14px;
+color: #ccc;
 }
 
 /* ========== Responsive Enhancements ========== */

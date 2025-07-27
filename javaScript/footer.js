@@ -1,60 +1,53 @@
-// Show footer only when user reaches bottom
-// window.addEventListener("scroll", function () {
-//   const footer = document.querySelector("footer");
-//   const scrollPosition = window.innerHeight + window.scrollY;
-//   const bottomOffset = document.body.offsetHeight - 20;
-//
-//   if (scrollPosition >= bottomOffset) {
-//     footer.style.display = "block";
-//   } else {
-//     footer.style.display = "none";
-//   }
-// });
-// footer.js
-// footer.js
-// function updateFooterVisibility() {
-//   const footer = document.querySelector("footer");
-//   const scrollable = document.documentElement.scrollHeight > window.innerHeight;
-//
-//   if (!scrollable) {
-//     footer.classList.add("always-visible");
-//     return;
-//   }
-//
-//   window.addEventListener("scroll", () => {
-//     const scrollTop = window.scrollY;
-//     const viewportHeight = window.innerHeight;
-//     const fullHeight = document.body.offsetHeight;
-//
-//     if (scrollTop + viewportHeight >= fullHeight - 50) {
-//       footer.classList.add("show");
-//       footer.classList.remove("hide");
-//     } else {
-//       footer.classList.remove("show");
-//       footer.classList.add("hide");
-//     }
-//   });
-// }
-//
-// document.addEventListener("DOMContentLoaded", updateFooterVisibility);
-function checkFooterVisibility() {
-  const footer = document.querySelector("footer");
-  const pageContent = document.querySelector(".page-border");
+async function loadFooterLinks() {
+try {
+  const res = await fetch(`${BACKEND_BASE_URL}/editIndexPages/footer`);
+  const data = await res.json();
 
-  if (!footer || !pageContent) return;
+  const iconMap = {
+    youtube: "fab fa-youtube",
+    whatsapp: "fab fa-whatsapp",
+    facebook: "fab fa-facebook",
+    instagram: "fab fa-instagram",
+    email: "fas fa-envelope",
+    twitter:"fab fa-twitter"
+  };
 
-  const contentBottom = pageContent.getBoundingClientRect().bottom;
-  const viewportHeight = window.innerHeight;
+  const socialContainer = document.getElementById("socialIcons");
+  const copyrightContainer = document.getElementById("copyrightText");
 
-  const threshold = 50; // give a small buffer
+  socialContainer.innerHTML = "";
+  copyrightContainer.innerHTML = "";
 
-  if (contentBottom <= viewportHeight - threshold) {
-    footer.classList.add("footer-visible");
-  } else {
-    footer.classList.remove("footer-visible");
-  }
+  data.forEach(item => {
+    if (item.enabled && iconMap[item.type]) {
+      let href = "#";
+      if (item.type === "email") {
+        href = `mailto:${item.value}`;
+      } else if (item.type === "whatsapp") {
+        href = `https://wa.me/${item.value}`;
+      } else {
+        if (!item.value.startsWith("http://") && !item.value.startsWith("https://")) {
+          href = `https://${item.value}`;
+        }
+      }
+
+      const a = document.createElement("a");
+      a.href = href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.innerHTML = `<i class="${iconMap[item.type]}"></i>`;
+      socialContainer.appendChild(a);
+    }
+
+    if (item.type === "copyright") {
+      const p = document.createElement("p");
+      p.innerHTML = `${item.value}`;
+      copyrightContainer.appendChild(p);
+    }
+  });
+
+} catch (err) {
+  console.error("Error loading footer:", err);
 }
-
-["scroll", "resize", "load"].forEach(evt =>
-  window.addEventListener(evt, checkFooterVisibility)
-);
+}
+  window.onload = loadFooterLinks;

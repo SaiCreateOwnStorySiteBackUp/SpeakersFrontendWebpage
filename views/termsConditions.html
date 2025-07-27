@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact Us - Free Voices</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/cssStyles/contact.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a3b1be9998.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <script src="/javaScript/footer.js"></script>
+<div class="page-border">
+  <nav>
+    <div class="logo-section">
+    <img id="logoImage" alt="Admin" class="logo">
+    <strong id="websiteName"></strong>
+  </div>
+    <!-- <div>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="termsConditions.html">Terms & Conditions</a>
+    </div> -->
+    <div id="dynamic-nav"></div>
+  </nav>
+
+  <div class="dashboard-container">
+    <div class="terms-info">
+      <!-- <h2>Terms and Conditions</h2>
+      <p>
+        Address: Sri Ram Nagar Colony, Gangaram, Chandanagar, Hyderabad, Pincode: 500050
+      </p> -->
+      <h2 id="termsHeader">Terms and Conditions</h2>
+      <p id="termsText">
+        Loading terms and conditions...
+      </p>
+    </div>
+  </div>
+  </div>
+  <!-- Footer section -->
+  <footer>
+    <div id="socialIcons" class="social-icons"></div>
+      <div id="copyrightText"></div>
+  </footer>
+    <!-- <script src="/js/footer.js"></script> -->
+    <script src="/js/config.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/javaScript/loadHeader.js"></script>
+    <script src="/javaScript/footer.js"></script>
+    <script>
+    loadHeaderMenu();
+    async function loadLogoContent() {
+    try {
+      const res = await fetch(`${BACKEND_BASE_URL}/editIndexPages/home`);
+      if (!res.ok) throw new Error("Network error");
+      const data = await res.json();
+
+      const logoImg = document.getElementById("logoImage");
+      if (data.logoUrl) {
+        logoImg.src = data.logoUrl;
+
+        if (data.logoShape === "circle") {
+          logoImg.classList.add("circle");
+        } else {
+          logoImg.classList.remove("circle");
+        }
+      }
+
+      if (data.homeWebsitename) {
+        document.getElementById("websiteName").textContent = data.homeWebsitename;
+      }
+    } catch (err) {
+      console.error("Error loading home data:", err);
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", loadLogoContent)
+    // const res = await fetch(`${BACKEND_BASE_URL}/editIndexPages/contact`);
+  async function loadTerms() {
+    try {
+      const res = await fetch(`${BACKEND_BASE_URL}/editIndexPages/terms`);
+      const data = await res.json();
+
+      document.getElementById("termsHeader").textContent = data.termsAndConditionsHeader || "Terms and Conditions";
+      document.getElementById("termsText").textContent = data.termsAndConditionsText || "No terms provided.";
+    } catch (err) {
+      console.error("Error loading terms:", err);
+    }
+  }
+
+  loadTerms();
+</script>
+
+  </body>
+  </html>

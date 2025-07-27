@@ -6,34 +6,108 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="/cssStyles/about.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a3b1be9998.js" crossorigin="anonymous"></script>
 </head>
 <body>
-<script src="/js/footer.js"></script>
+<!-- <script src="/javaScript/footer.js"></script> -->
 <div class="page-border">
   <nav>
-    <div><strong style="color:white;">Free Voices</strong></div>
-    <div>
+    <div class="logo-section">
+    <img id="logoImage" alt="Admin" class="logo">
+    <strong id="websiteName"></strong>
+    </div>
+    <!-- <div>
       <a href="index.html">Home</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
-    </div>
+      <a href="termsConditions.html">Terms & Conditions</a>
+    </div> -->
+    <div id="dynamic-nav"></div>
   </nav>
   <div class="container">
     <div class="admin-info">
-      <img src="images/admin.png" alt="Admin Sai">
+      <img id="adminLogo" src="" alt="Admin Logo" class="default-logo">
       <h2>Sai - Admin</h2>
-      <p>
+      <!-- <p>
         Welcome to Free Voices! I'm Sai, the administrator of this platform.
         This website is built with love and collaboration from my five amazing friends who create and share stories in categories like kids, dreams, and education.
         We aim to provide engaging and thoughtful content for all readers.
         Each speaker contributes uniquely, and this platform ensures their voices are heard.
         We're excited to bring you creativity, connection, and community through stories.
-      </p>
+      </p> -->
+      <p id="aboutParagraph">Loading about content...</p>
     </div>
   </div>
 </div>
 <footer>
-    <p>© 2025 Free Voices | All Rights Reserved</p>
-  </footer>
+  <div id="socialIcons" class="social-icons"></div>
+    <div id="copyrightText"></div>
+</footer>
+  <script src="/js/config.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/javaScript/loadHeader.js"></script>
+    <script src="/javaScript/footer.js"></script>
+  <script>
+  loadHeaderMenu();
+  async function loadLogoContent() {
+  try {
+    const res = await fetch(`${BACKEND_BASE_URL}/editIndexPages/home`);
+    if (!res.ok) throw new Error("Network error");
+    const data = await res.json();
+
+    const logoImg = document.getElementById("logoImage");
+    if (data.logoUrl) {
+      logoImg.src = data.logoUrl;
+
+      if (data.logoShape === "circle") {
+        logoImg.classList.add("circle");
+      } else {
+        logoImg.classList.remove("circle");
+      }
+    }
+
+    if (data.homeWebsitename) {
+      document.getElementById("websiteName").textContent = data.homeWebsitename;
+    }
+  } catch (err) {
+    console.error("Error loading home data:", err);
+  }
+}
+
+window.addEventListener("DOMContentLoaded", loadLogoContent)
+
+  async function loadAboutData() {
+    try {
+      const res = await fetch(`${BACKEND_BASE_URL}/editIndexPages/about`);
+      const data = await res.json();
+      // Update image src
+      const logoImg = document.getElementById("adminLogo");
+      if (!res.ok) throw new Error("Failed to fetch about data");
+
+      if (data.logoUrl) {
+        logoImg.src = data.logoUrl;
+      } else {
+        logoImg.src = "images/admin.png"; // fallback image
+      }
+
+      // Update logo shape
+      if (data.logoShape === "circle") {
+        logoImg.classList.add("circle-logo");
+        logoImg.classList.remove("default-logo");
+      } else {
+        logoImg.classList.add("default-logo");
+        logoImg.classList.remove("circle-logo");
+      }
+
+      // Update about text
+      document.getElementById("aboutParagraph").textContent = data.aboutText || "Welcome to Free Voices!";
+    } catch (err) {
+      console.error("Error loading about data:", err);
+    }
+  }
+
+  loadAboutData();
+</script>
+
 </body>
 </html>

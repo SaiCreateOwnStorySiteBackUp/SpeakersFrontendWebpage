@@ -26,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
 app.use('/cssStyles', express.static(path.join(__dirname, 'cssStyles')));
+app.use('/javaScript', express.static(path.join(__dirname, 'javaScript')));
 
 // ---------- API Proxy ----------
 // app.use('/stories', createProxyMiddleware({ target: 'http://localhost:5000', changeOrigin: true }));

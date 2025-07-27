@@ -8,67 +8,74 @@
   <link rel="stylesheet" href="/cssStyles/index.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
   <script src="https://kit.fontawesome.com/a3b1be9998.js" crossorigin="anonymous"></script>
-
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="https://freevoices.onrender.com/sitemap.xml">
 </head>
 <body>
+  <!-- <script src="/javaScript/footer.js"></script> -->
   <div class="page-border">
   <header>
     <div>
       <!-- <img src="images/logo.PNG" alt="Logo" class="logo"> -->
       <img src="/images/admin.png" alt="Admin" class="logo">
     </div>
-    <nav>
+    <!-- <nav>
       <a href="#home">Home</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
-    </nav>
+      <a href="termsConditions.html">Terms & Conditions</a>
+    </nav> -->
+    <nav id="dynamic-nav">
   </header>
 
   <section class="welcome" id="home">
-    <h1>Welcome to Template Design</h1>
+    <!-- <h1>Welcome to Template Design</h1>
     <p>We share creative and inspirational stories.<br>
     Developed by Admin Sai with love.<br>
     Stories for children, dreamers, and learners.<br>
     Meet our speakers and their beautiful ideas.<br>
-    Dive in, read, and be inspired.</p>
+    Dive in, read, and be inspired.</p> -->
+    <h1>Default Header</h1>
+    <p>Default paragraph content...</p>
   </section>
 
-  <section class="speakers">
-    <div class="speaker">
-      <a href="/cherana.html" onclick="trackClick('cherana')" style="text-decoration: none; color: inherit;">
+  <section class="speakers" id="speakersContainer">
+     <!-- <div class="speaker">
+      <a href="/cherana.html" onclick="trackClick('cherana')" style="text-decoration: none; color: inherit;"> -->
         <!-- <a href="/cherana.html" onclick="trackClick('cherana')" style="text-decoration: none; color: inherit;"> -->
-        <img src="https://res.cloudinary.com/createownstory/image/upload/v1748703169/IMG_5632_e3jz2v.jpg" alt="Cherana">
+         <!-- <img src="https://res.cloudinary.com/createownstory/image/upload/v1748703169/IMG_5632_e3jz2v.jpg" alt="Cherana">
         <h3>Cherana</h3>
       </a>
       <p>Kids Stories</p>
-    </div>
-    <div class="speaker">
+    </div> -->
+    <!-- <div class="speaker">
       <a href="/sadhana.html" onclick="trackClick('sadhana')" style="text-decoration: none; color: inherit;">
       <img src="https://res.cloudinary.com/createownstory/image/upload/v1748685713/GPAQ7401_ade4vp.jpg" alt="Sadhana">
       <h3>Sadhana</h3>
       </a>
       <p>Dream Stories</p>
-    </div>
-    <div class="speaker">
+    </div> -->
+    <!-- <div class="speaker">
       <img src="/images/Muni.PNG" alt="Muni">
       <h3>Muni</h3>
       </a>
       <p>Educational Stories</p>
-    </div>
-    <div class="speaker">
+    </div> -->
+    <!-- <div class="speaker">
       <img src="/images/Nikitha.PNG" alt="Nikitha">
       <h3>Nikitha</h3>
       </a>
       <p>Speaker</p>
-    </div>
-    <div class="speaker">
+    </div> -->
+    <!-- <div class="speaker">
       <a href="/seshu.html" onclick="trackClick('seshu')" style="text-decoration: none; color: inherit;">
       <img src="https://res.cloudinary.com/createownstory/image/upload/v1748686301/20210316_092052_l81ih1.jpg" alt="Seshu">
       <h3>Seshu</h3>
       </a>
       <p>Speaker</p>
-    </div>
+    </div> -->
+    <p>Loading speakers...</p>
   </section>
+
   <section class="visitors" id="visitors">
   <h2>Visitor Statistics</h2>
   <div class="visitor-stats">
@@ -95,75 +102,163 @@
       <button type="submit" style="padding:10px 20px;background-color:#00bcd4;color:white;border:none;">Submit</button>
     </form>
   </section> -->
-
-  <footer>
+  </div>
+  <!-- <footer>
     <a href="https://youtube.com"><i class="fab fa-youtube"></i></a>
     <a href="https://wa.me/911234567890"><i class="fab fa-whatsapp"></i></a>
     <a href="https://facebook.com"><i class="fab fa-facebook"></i></a>
-    <p>&copy; 2025 Free Voices</p>
+    <a href="https://instagram.com"><i class="fab fa-instagram"></i></a>
+    <a href="mailto:info@FreeVoices.com"><i class="fas fa-envelope"></i></a>
+
+    <p>&copy; 2025 Free Voices | All Rights Reserved</p>
+  </footer> -->
+  <footer>
+    <div id="socialIcons" class="social-icons"></div>
+      <div id="copyrightText"></div>
   </footer>
-  </div>
-  <!-- <script>
-  async function loadVisitorStats() {
-    try {
-      // Get total visitor count
-      const countRes = await fetch('http://localhost:5000/api/visitor/count');
-      const countData = await countRes.json();
-      document.getElementById('visitor-count').textContent = countData.count;
-
-      // Get visitor's approximate location
-      const ipRes = await fetch('https://ipapi.co/json/');
-      const ipData = await ipRes.json();
-      document.getElementById('visitor-location').textContent =
-        `${ipData.city}, ${ipData.region}, ${ipData.country_name}`;
-    } catch (err) {
-      document.getElementById('visitor-location').textContent = 'Unavailable';
-      console.error('Error loading visitor stats:', err);
-    }
-  }
-
-  loadVisitorStats();
-</script> -->
 <script src="/js/config.js"></script>
 <script src="/js/api.js"></script>
-<!-- <script>
-    // const backendUrl = window.BACKEND_BASE_URL;
+<script src="/javaScript/loadHeader.js"></script>
+<script src="/javaScript/footer.js"></script>
 
-  async function loadVisitorCount() {
-    try {
-      // Try tracking visitor
-      const trackRes = await fetch(`${window.BACKEND_BASE_URL}/api/visitor/track`, {
-        method: 'POST'
-      });
-
-      if (!trackRes.ok) throw new Error(`Track failed with status ${trackRes.status}`);
-
-      // Fetch total visitor count
-      const countRes = await fetch(`${window.BACKEND_BASE_URL}/api/visitor/count`);
-      if (!countRes.ok) throw new Error(`Count fetch failed with status ${countRes.status}`);
-
-      const data = await countRes.json();
-      const count = (data && typeof data.count === 'number') ? data.count : 0;
-
-      document.getElementById('visitor-count').textContent = count;
-    } catch (err) {
-      console.warn('Visitor tracking/count error:', err.message);
-      document.getElementById('visitor-count').textContent = '0'; // fallback to 0
-    }
-  }
-
-  loadVisitorCount();
-
-  // Track speaker click
-  function trackClick(speaker) {
-    fetch(`${window.BACKEND_BASE_URL}/api/visitor/track-click`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ speaker })
-    }).catch(err => console.error('Speaker click tracking failed:', err));
-  }
-  </script> -->
   <script>
+  loadHeaderMenu();
+    // const res = await fetch(`${window.BACKEND_BASE_URL}/editIndexPages/home`);
+
+  // **********************************Foter Section First*************************************************
+//   async function loadFooterLinks() {
+//   try {
+//     const res = await fetch(`${BACKEND_BASE_URL}/editIndexPages/footer`);
+//     const data = await res.json();
+//
+//     const iconMap = {
+//       youtube: "fab fa-youtube",
+//       whatsapp: "fab fa-whatsapp",
+//       facebook: "fab fa-facebook",
+//       instagram: "fab fa-instagram",
+//       email: "fas fa-envelope"
+//     };
+//
+//     const socialContainer = document.getElementById("socialIcons");
+//     const copyrightContainer = document.getElementById("copyrightText");
+//
+//     socialContainer.innerHTML = "";
+//     copyrightContainer.innerHTML = "";
+//
+//     data.forEach(item => {
+//       if (item.enabled && iconMap[item.type]) {
+//         let href = "#";
+//         if (item.type === "email") {
+//           href = `mailto:${item.value}`;
+//         } else if (item.type === "whatsapp") {
+//           href = `https://wa.me/${item.value}`;
+//         } else {
+//           if (!item.value.startsWith("http://") && !item.value.startsWith("https://")) {
+//             href = `https://${item.value}`;
+//           }
+//         }
+//
+//         const a = document.createElement("a");
+//         a.href = href;
+//         a.target = "_blank";
+//         a.rel = "noopener noreferrer";
+//         a.innerHTML = `<i class="${iconMap[item.type]}"></i>`;
+//         socialContainer.appendChild(a);
+//       }
+//
+//       if (item.type === "copyright") {
+//         const p = document.createElement("p");
+//         p.innerHTML = `&copy; ${item.value}`;
+//         copyrightContainer.appendChild(p);
+//       }
+//     });
+//
+//   } catch (err) {
+//     console.error("Error loading footer:", err);
+//   }
+// }
+//     window.onload = loadFooterLinks;
+    // **********************************Foter Section End*************************************************
+  async function loadHomePageContent() {
+      try {
+        const res = await fetch(`${window.BACKEND_BASE_URL}/editIndexPages/home`);
+        if (!res.ok) throw new Error("Network error");
+
+        const data = await res.json();
+
+        // Update logo
+        // if (data.logoUrl) {
+        //   document.querySelector(".logo").src = data.logoUrl;
+        // }
+        if (data.logoUrl) {
+          const logoImg = document.querySelector(".logo");
+          logoImg.src = data.logoUrl;
+
+          // Apply circle class if needed
+          if (data.logoShape === "circle") {
+            logoImg.classList.add("circle");
+          } else {
+            logoImg.classList.remove("circle");
+          }
+        }
+
+        // Update header
+        if (data.homeHeader) {
+          document.querySelector("#home h1").innerText = data.homeHeader;
+        }
+
+        // Update paragraph
+        if (data.homeParagraph) {
+          document.querySelector("#home p").innerHTML = data.homeParagraph;
+        }
+
+      } catch (err) {
+        console.error("Failed to load homepage content", err);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", loadHomePageContent);
+
+  async function loadSpeakersToHomePage() {
+  const container = document.getElementById("speakersContainer");
+  container.innerHTML = ""; // Clear loading state
+
+  try {
+    const res = await fetch(`${window.BACKEND_BASE_URL}/users/allSpeakers`);
+    const speakers = await res.json();
+
+    if (!Array.isArray(speakers)) {
+      container.innerHTML = "<p>No speaker data found.</p>";
+      return;
+    }
+
+    for (const speaker of speakers) {
+      const imgSrc = speaker.profileImage
+        ? `${speaker.profileImage}?t=${Date.now()}`  // Force fresh image
+        : "/images/default.jpg";
+
+      const card = document.createElement("div");
+      card.className = "speaker";
+
+      card.innerHTML = `
+        <a href="/${speaker.name.toLowerCase()}.html" onclick="trackClick('${speaker.name.toLowerCase()}')" style="text-decoration: none; color: inherit;">
+          <img src="${imgSrc}" alt="${speaker.name}">
+          <h3>${speaker.name}</h3>
+        </a>
+        <p>${speaker.topic || "Speaker"}</p>
+      `;
+
+      container.appendChild(card);
+    }
+  } catch (err) {
+    console.error("Failed to load speakers:", err);
+    container.innerHTML = "<p>Unable to load speakers.</p>";
+  }
+}
+
+// Run on page load
+loadSpeakersToHomePage();
+
 async function loadVisitorCount () {
 
   /* ── 1. get user position (permission‑based) ─────────────────── */
