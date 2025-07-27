@@ -13,11 +13,12 @@
 <!-- Header Navigation -->
 <nav>
   <div><strong style="color:white;">Free voices</strong></div>
-  <div>
+  <!-- <div>
     <a href="/index.html">Home</a>
     <a href="/about.html">About</a>
     <a href="/contact.html">Contact</a>
-  </div>
+  </div> -->
+  <div id="dynamic-nav"></div>
 </nav>
 
 <!-- Page Content -->
@@ -43,16 +44,23 @@
   <div class="pagination" id="pagination"></div>
 </div>
 
-<footer id="footer">
+<!-- <footer id="footer">
   <a href="#"><i class="fab fa-facebook"></i></a>
   <a href="#"><i class="fab fa-twitter"></i></a>
   <a href="#"><i class="fab fa-instagram"></i></a>
   <p>&copy; 2025 Free Voices | Follow us:</p>
+</footer> -->
+<footer>
+  <div id="socialIcons" class="social-icons"></div>
+    <div id="copyrightText"></div>
 </footer>
 
 <script src="/js/config.js"></script>
 <script src="/js/api.js"></script>
+<script src="/javaScript/loadHeader.js"></script>
+  <script src="/javaScript/footer.js"></script>
 <script>
+loadHeaderMenu();
 document.addEventListener('DOMContentLoaded', async () => {
   const storiesPerPage = 5;
   let currentPage = 1;

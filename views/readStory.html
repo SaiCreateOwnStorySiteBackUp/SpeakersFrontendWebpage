@@ -16,11 +16,12 @@
   <!-- Navbar -->
   <nav>
     <div style="color: white; font-weight: bold;">Free Voices</div>
-    <div>
+    <!-- <div>
       <a href="index.html">Home</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
-    </div>
+    </div> -->
+    <div id="dynamic-nav"></div>
   </nav>
 
   <!-- Story Content -->
@@ -43,14 +44,18 @@
 
   <!-- Footer -->
   <footer>
-    &copy; 2025 Free Voices. All rights reserved.
+    <div id="socialIcons" class="social-icons"></div>
+      <div id="copyrightText"></div>
   </footer>
 
   <!-- DOMPurify for XSS protection -->
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.2/dist/purify.min.js"></script>
   <script src="/js/config.js"></script>
   <script src="/js/api.js"></script>
+  <script src="/javaScript/loadHeader.js"></script>
+    <script src="/javaScript/footer.js"></script>
   <script>
+  loadHeaderMenu();
   function stripHTML(html) {
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = html;
